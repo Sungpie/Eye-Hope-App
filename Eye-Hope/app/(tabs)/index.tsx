@@ -245,18 +245,44 @@ export default function InterestNewsScreen() {
           }
         } catch (error) {
           console.error(`${category} 카테고리 뉴스 가져오기 실패:`, error);
-          return [];
+          // 네트워크 오류나 기타 오류 시 에러를 다시 throw하여 상위 catch에서 처리
+          throw error;
         }
       });
 
-      const allNews = await Promise.all(newsPromises);
-      console.log("모든 뉴스 데이터:", allNews);
-      console.log(
-        "각 카테고리별 뉴스 개수:",
-        allNews.map((news, index) => `${categories[index]}: ${news.length}개`)
+      const allNewsResults = await Promise.allSettled(newsPromises);
+      console.log("모든 뉴스 데이터 결과:", allNewsResults);
+
+      // 성공한 결과만 필터링
+      const successfulNews = allNewsResults
+        .filter(
+          (result): result is PromiseFulfilledResult<any[]> =>
+            result.status === "fulfilled"
+        )
+        .map((result) => result.value);
+
+      // 실패한 결과 확인
+      const failedResults = allNewsResults.filter(
+        (result) => result.status === "rejected"
       );
 
-      const flattenedNews = allNews.flat().map((news, index) => ({
+      if (failedResults.length > 0) {
+        console.log("실패한 카테고리들:", failedResults);
+        // 모든 카테고리가 실패한 경우에만 에러 상태로 설정
+        if (failedResults.length === categories.length) {
+          throw new Error("모든 카테고리에서 뉴스를 가져오는데 실패했습니다.");
+        }
+      }
+
+      console.log("성공한 뉴스 데이터:", successfulNews);
+      console.log(
+        "각 카테고리별 뉴스 개수:",
+        successfulNews.map(
+          (news, index) => `${categories[index]}: ${news.length}개`
+        )
+      );
+
+      const flattenedNews = successfulNews.flat().map((news, index) => ({
         id: news.id || news.articleId || `news-${index}`,
         title: news.title || news.headline || "제목 없음",
         content:
@@ -272,6 +298,12 @@ export default function InterestNewsScreen() {
       }));
 
       console.log("변환된 뉴스 데이터:", flattenedNews);
+
+      // 뉴스 데이터가 없는 경우 에러 상태로 설정
+      if (flattenedNews.length === 0) {
+        throw new Error("뉴스 데이터를 찾을 수 없습니다.");
+      }
+
       setNewsData(flattenedNews);
     } catch (error) {
       console.error("뉴스 가져오기 오류:", error);
@@ -368,7 +400,9 @@ export default function InterestNewsScreen() {
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
           <Text style={styles.errorTitle}>정보를 불러오지 못했어요</Text>
-          <Text style={styles.errorMessage}>인터넷 연결을 확인해보세요.</Text>
+          <Text style={styles.errorMessage}>
+            다시 불러오기 버튼을 눌러 정보를 불러오세요!
+          </Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
             <Ionicons name="refresh" size={20} color="#FFFFFF" />
             <Text style={styles.retryButtonText}>정보 불러오기</Text>
@@ -503,10 +537,11 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 40,
     paddingVertical: 60,
+    marginTop: 100,
   },
   errorTitle: {
     fontSize: 20,
