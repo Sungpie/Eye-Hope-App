@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  BackHandler,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -114,11 +115,41 @@ export default function InterestNewsScreen() {
     params.selectedTimes,
   ]);
 
-  // 화면이 포커스될 때마다 카테고리 새로고침
+  // 화면이 포커스될 때마다 카테고리 새로고침 및 Android 뒤로가기 처리
   useFocusEffect(
     React.useCallback(() => {
       console.log("관심뉴스 화면 포커스됨");
       loadCategories();
+
+      // 관심뉴스 탭 방문 기록
+      AsyncStorage.setItem("lastVisitedTab", "index");
+      console.log("관심뉴스 탭 방문 기록됨");
+
+      // Android에서 뒤로가기 버튼 처리
+      const backAction = () => {
+        if (Platform.OS === "android") {
+          Alert.alert("앱 종료", "앱을 종료하시겠습니까?", [
+            {
+              text: "취소",
+              onPress: () => null,
+              style: "cancel",
+            },
+            {
+              text: "종료",
+              onPress: () => BackHandler.exitApp(),
+            },
+          ]);
+          return true; // 이벤트를 처리했음을 알림
+        }
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => backHandler.remove();
     }, [])
   );
 
@@ -337,9 +368,7 @@ export default function InterestNewsScreen() {
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
           <Text style={styles.errorTitle}>정보를 불러오지 못했어요</Text>
-          <Text style={styles.errorMessage}>
-            다시 불러오기 버튼을 눌러 정보를 불러오세요!
-          </Text>
+          <Text style={styles.errorMessage}>인터넷 연결을 확인해보세요.</Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
             <Ionicons name="refresh" size={20} color="#FFFFFF" />
             <Text style={styles.retryButtonText}>정보 불러오기</Text>
@@ -412,7 +441,8 @@ export default function InterestNewsScreen() {
             <Ionicons name="newspaper-outline" size={64} color="#C7C7CC" />
             <Text style={styles.emptyTitle}>뉴스가 없습니다</Text>
             <Text style={styles.emptySubtitle}>
-              설정에서 관심 카테고리를 선택하거나{"\n"}새로고침을 시도해보세요
+              설정에서 관심 카테고리를 선택하거나{"\n"}인터넷 연결을
+              확인해보세요.
             </Text>
           </View>
         )}

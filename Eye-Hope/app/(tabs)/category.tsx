@@ -7,10 +7,13 @@ import {
   ScrollView,
   Pressable,
   Platform,
+  BackHandler,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CategoryScreen() {
   const router = useRouter();
@@ -35,16 +38,68 @@ export default function CategoryScreen() {
     });
   };
 
+  // Android에서 뒤로가기 버튼 처리 및 탭 방문 추적
+  useFocusEffect(
+    React.useCallback(() => {
+      // 카테고리 탭 방문 기록
+      AsyncStorage.setItem("lastVisitedTab", "category");
+      console.log("카테고리 탭 방문 기록됨");
+
+      const backAction = () => {
+        if (Platform.OS === "android") {
+          router.push("/(tabs)"); // 관심뉴스 페이지로 이동
+          return true; // 이벤트를 처리했음을 알림
+        }
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => backHandler.remove();
+    }, [])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 제목 */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 20, 30) : 20 }]}>
-        <Text style={[styles.title, { textAlign: "center" }]}>카테고리</Text>
-        <Text style={styles.subtitle}>
-          <Text style={{ textAlign: "center" }}>
-            원하는 카테고리를 선택해서 최신 뉴스를 확인하세요
-          </Text>
-        </Text>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop:
+              Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
+          },
+        ]}
+      >
+        <View style={styles.headerContent}>
+          <View style={styles.placeholder} />
+          <View style={styles.titleContainer}>
+            <Text style={[styles.title, { textAlign: "center" }]}>
+              카테고리
+            </Text>
+            <Text style={styles.subtitle}>
+              <Text style={{ textAlign: "center" }}>
+                원하는 카테고리를 선택해서 최신 뉴스를 확인하세요
+              </Text>
+            </Text>
+          </View>
+          <Pressable
+            style={styles.settingsButton}
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/settings",
+                params: { fromCategory: "true" },
+              })
+            }
+            accessibilityLabel="설정 페이지로 이동"
+            accessibilityRole="button"
+          >
+            <Ionicons name="settings-outline" size={24} color="#007AFF" />
+          </Pressable>
+        </View>
       </View>
 
       {/* 카테고리 그리드 */}
@@ -109,6 +164,23 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5EA",
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  settingsButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#F2F2F7",
+  },
+  placeholder: {
+    width: 40,
   },
   title: {
     fontSize: 28,

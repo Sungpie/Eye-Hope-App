@@ -296,11 +296,11 @@ export default function CategoryNewsScreen() {
 
   const formatTimeAgo = (publishedAt: string) => {
     const now = new Date();
-    
+
     // UTC 시간을 한국 시간(KST)으로 변환 (+9시간)
     const publishedUTC = new Date(publishedAt);
-    const publishedKST = new Date(publishedUTC.getTime() + (9 * 60 * 60 * 1000));
-    
+    const publishedKST = new Date(publishedUTC.getTime() + 9 * 60 * 60 * 1000);
+
     // 현재 시간과 한국 시간으로 변환된 발행 시간의 차이 계산
     const diffInMilliseconds = now.getTime() - publishedKST.getTime();
     const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
@@ -308,10 +308,10 @@ export default function CategoryNewsScreen() {
 
     // 1분 미만
     if (diffInMinutes < 1) return "방금 전";
-    
+
     // 1시간 미만 (분으로 표기)
     if (diffInHours < 1) return `${diffInMinutes}분 전`;
-    
+
     // 24시간 미만 (시간으로 표기)
     if (diffInHours < 24) return `${diffInHours}시간 전`;
 
@@ -348,14 +348,24 @@ export default function CategoryNewsScreen() {
       label += `원문 링크 있음. `;
     }
     label += `뉴스를 자세히 보려면 두 번 탭하세요.`;
-    
+
     return label;
   };
 
   if (loading && newsData.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 25, 35) : Math.max(insets.top + 10, 20) }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              paddingTop:
+                Platform.OS === "android"
+                  ? Math.max(insets.top + 25, 35)
+                  : Math.max(insets.top + 10, 20),
+            },
+          ]}
+        >
           <Pressable style={styles.backButton} onPress={handleGoBack}>
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </Pressable>
@@ -373,7 +383,17 @@ export default function CategoryNewsScreen() {
   if (error) {
     return (
       <View style={styles.container}>
-        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 25, 35) : Math.max(insets.top + 10, 20) }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              paddingTop:
+                Platform.OS === "android"
+                  ? Math.max(insets.top + 25, 35)
+                  : Math.max(insets.top + 10, 20),
+            },
+          ]}
+        >
           <Pressable style={styles.backButton} onPress={handleGoBack}>
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </Pressable>
@@ -398,7 +418,17 @@ export default function CategoryNewsScreen() {
   return (
     <View style={styles.container}>
       {/* 상단 헤더 */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 25, 35) : Math.max(insets.top + 10, 20) }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop:
+              Platform.OS === "android"
+                ? Math.max(insets.top + 25, 35)
+                : Math.max(insets.top + 10, 20),
+          },
+        ]}
+      >
         <Pressable style={styles.backButton} onPress={handleGoBack}>
           <Ionicons name="chevron-back" size={24} color="#007AFF" />
         </Pressable>
@@ -415,13 +445,14 @@ export default function CategoryNewsScreen() {
         }
         onScroll={({ nativeEvent }) => {
           const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          
+
           // 전체 스크롤 가능한 높이
-          const totalScrollableHeight = contentSize.height - layoutMeasurement.height;
-          
+          const totalScrollableHeight =
+            contentSize.height - layoutMeasurement.height;
+
           // 70% 지점 계산
           const triggerPoint = totalScrollableHeight * 0.7;
-          
+
           // 현재 스크롤 위치가 70%를 넘었는지 확인
           if (contentOffset.y >= triggerPoint && totalScrollableHeight > 0) {
             handleLoadMore();
@@ -463,12 +494,20 @@ export default function CategoryNewsScreen() {
                       {formatTimeAgo(news.publishedAt)}
                     </Text>
                   </View>
-                  <Text style={styles.newsTitle} numberOfLines={3} accessible={false}>
+                  <Text
+                    style={styles.newsTitle}
+                    numberOfLines={3}
+                    accessible={false}
+                  >
                     {news.title}
                   </Text>
-                  <Text style={styles.newsContent} accessible={false}>{news.content}</Text>
+                  <Text style={styles.newsContent} accessible={false}>
+                    {news.content}
+                  </Text>
                   <View style={styles.newsFooter} accessible={false}>
-                    <Text style={styles.newsSource} accessible={false}>{news.source}</Text>
+                    <Text style={styles.newsSource} accessible={false}>
+                      {news.source}
+                    </Text>
                     {news.url && (
                       <Ionicons name="link-outline" size={14} color="#8E8E93" />
                     )}
@@ -558,10 +597,11 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 40,
     paddingVertical: 60,
+    marginTop: 100,
   },
   errorTitle: {
     fontSize: 20,

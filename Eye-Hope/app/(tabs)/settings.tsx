@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  BackHandler,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -87,7 +88,12 @@ interface UserScheduleResponse {
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{
+    fromCategory?: string;
+    selectedCategories?: string;
+    selectedTimes?: string;
+    fromNewsUpdate?: string;
+  }>();
   const insets = useSafeAreaInsets();
 
   // 상태 관리
@@ -112,23 +118,38 @@ export default function SettingsScreen() {
     loadSavedData();
   }, []);
 
-  // 화면이 포커스될 때마다 저장된 데이터 새로고침
+  // 화면이 포커스될 때마다 저장된 데이터 새로고침 및 Android 뒤로가기 처리
   useFocusEffect(
     React.useCallback(() => {
       console.log("설정 화면 포커스됨 - 데이터 새로고침");
       console.log("현재 params:", params);
 
-      // 파라미터가 있으면 우선 처리 후 즉시 반환
+      // 파라미터가 있으면 우선 처리
       if (params.selectedCategories || params.selectedTimes) {
         console.log("파라미터가 있어서 파라미터 우선 처리");
         handleParamsUpdate();
-        return;
+      } else {
+        // 파라미터가 없을 때만 저장된 데이터 로드
+        console.log("파라미터가 없어서 저장된 데이터 로드");
+        loadSavedData();
       }
 
-      // 파라미터가 없을 때만 저장된 데이터 로드
-      console.log("파라미터가 없어서 저장된 데이터 로드");
-      loadSavedData();
-    }, [params.selectedCategories, params.selectedTimes, params.fromNewsUpdate])
+      // Android에서 뒤로가기 버튼 처리 - 항상 관심뉴스 페이지로 이동
+      const backAction = () => {
+        if (Platform.OS === "android") {
+          router.push("/(tabs)"); // 관심뉴스 페이지로 이동
+          return true; // 이벤트를 처리했음을 알림
+        }
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => backHandler.remove();
+    }, [params.selectedCategories, params.selectedTimes])
   );
 
   // 백엔드에서 사용자 관심 뉴스 가져오기 - 비활성화 (로컬 데이터만 사용)
