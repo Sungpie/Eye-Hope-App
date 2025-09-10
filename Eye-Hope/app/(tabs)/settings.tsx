@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { settingsStyles } from "../../styles/settingsStyles";
 
 // 카테고리별 색상 매핑 함수 추가
 const getCategoryColor = (category: string): string => {
@@ -379,34 +380,38 @@ export default function SettingsScreen() {
   // };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={settingsStyles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* 상단 제목 */}
         <View
           style={[
-            styles.header,
+            settingsStyles.header,
             {
               paddingTop:
                 Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
             },
           ]}
         >
-          <Text style={[styles.title, { textAlign: "center" }]}>설정</Text>
-          <Text style={[styles.subtitle, { textAlign: "center" }]}>
+          <Text style={[settingsStyles.title, { textAlign: "center" }]}>
+            설정
+          </Text>
+          <Text style={[settingsStyles.subtitle, { textAlign: "center" }]}>
             사용자 정보와 현재 관심뉴스를 수정할 수 있습니다.
           </Text>
         </View>
 
         {/* 로딩 표시 */}
         {loading && (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>데이터를 불러오는 중...</Text>
+          <View style={settingsStyles.loadingContainer}>
+            <Text style={settingsStyles.loadingText}>
+              데이터를 불러오는 중...
+            </Text>
           </View>
         )}
 
         {/* 현재 관심뉴스 섹션 - 접근성 개선 */}
         <TouchableOpacity
-          style={[styles.interestNewsSection, { alignItems: "center" }]}
+          style={[settingsStyles.interestNewsSection, { alignItems: "center" }]}
           onPress={handleCategoryChange}
           activeOpacity={0.7}
           accessible={true}
@@ -414,9 +419,9 @@ export default function SettingsScreen() {
           accessibilityLabel={getCategoriesAccessibilityLabel()}
           accessibilityHint="관심 뉴스 카테고리를 수정할 수 있는 페이지로 이동합니다"
         >
-          <View style={styles.sectionHeaderSimple} accessible={false}>
+          <View style={settingsStyles.sectionHeaderSimple} accessible={false}>
             <Text
-              style={[styles.sectionTitle, { textAlign: "center" }]}
+              style={[settingsStyles.sectionTitle, { textAlign: "center" }]}
               accessible={false}
             >
               현재 관심뉴스
@@ -424,24 +429,30 @@ export default function SettingsScreen() {
           </View>
 
           <View
-            style={[styles.categoriesContainer, { justifyContent: "center" }]}
+            style={[
+              settingsStyles.categoriesContainer,
+              { justifyContent: "center" },
+            ]}
             accessible={false}
           >
             {currentCategories.map((category, index) => (
               <View
                 key={index}
-                style={styles.categoryItemContainer}
+                style={settingsStyles.categoryItemContainer}
                 accessible={false}
               >
                 <View
                   style={[
-                    styles.categoryTag,
+                    settingsStyles.categoryTag,
                     { backgroundColor: getCategoryColor(category) },
                   ]}
                   accessible={false}
                 >
                   <Text
-                    style={[styles.categoryText, { textAlign: "center" }]}
+                    style={[
+                      settingsStyles.categoryText,
+                      { textAlign: "center" },
+                    ]}
                     accessible={false}
                   >
                     {category || "카테고리"}
@@ -451,13 +462,13 @@ export default function SettingsScreen() {
             ))}
           </View>
           <Text
-            style={[styles.questionText, { textAlign: "center" }]}
+            style={[settingsStyles.questionText, { textAlign: "center" }]}
             accessible={false}
           >
             관심뉴스를 수정 / 변경하시겠어요?
           </Text>
           <Text
-            style={[styles.instructionText, { textAlign: "center" }]}
+            style={[settingsStyles.instructionText, { textAlign: "center" }]}
             accessible={false}
           >
             변경을 원하신다면 두 번 눌러주세요.
@@ -467,7 +478,7 @@ export default function SettingsScreen() {
         {/* 시간대 변경 섹션 - 숨김 처리 */}
         {/* 
         <TouchableOpacity
-          style={[styles.timeChangeSection, { alignItems: "center" }]}
+          style={[settingsStyles.timeChangeSection, { alignItems: "center" }]}
           onPress={handleTimeChange}
           activeOpacity={0.7}
           accessible={true}
@@ -475,16 +486,16 @@ export default function SettingsScreen() {
           accessibilityLabel={getTimeAccessibilityLabel()}
           accessibilityHint="뉴스 알림을 받을 시간대를 수정할 수 있는 페이지로 이동합니다"
         >
-          <Text style={[styles.sectionTitle, { textAlign: "center" }]} accessible={false}>
+          <Text style={[settingsStyles.sectionTitle, { textAlign: "center" }]} accessible={false}>
             알림 시간대 변경
           </Text>
-          <View style={[styles.timeInfoContainer, { alignItems: "center" }]} accessible={false}>
-            <Text style={[styles.timeInfoText, { textAlign: "center" }]} accessible={false}>
+          <View style={[settingsStyles.timeInfoContainer, { alignItems: "center" }]} accessible={false}>
+            <Text style={[settingsStyles.timeInfoText, { textAlign: "center" }]} accessible={false}>
               현재 알림 시간대는
             </Text>
             <View
               style={[
-                styles.timeButtonsContainer,
+                settingsStyles.timeButtonsContainer,
                 {
                   alignItems: "center",
                   flexDirection: "row",
@@ -493,34 +504,34 @@ export default function SettingsScreen() {
               ]}
               accessible={false}
             >
-              <View style={styles.timeButton} accessible={false}>
-                <Text style={[styles.timeButtonText, { textAlign: "center" }]} accessible={false}>
+              <View style={settingsStyles.timeButton} accessible={false}>
+                <Text style={[settingsStyles.timeButtonText, { textAlign: "center" }]} accessible={false}>
                   {currentTimes.morning || "미설정"}
                 </Text>
               </View>
-              <Text style={[styles.timeInfoText, { textAlign: "center" }]} accessible={false}>
+              <Text style={[settingsStyles.timeInfoText, { textAlign: "center" }]} accessible={false}>
                 와
               </Text>
-              <View style={styles.timeButton} accessible={false}>
-                <Text style={[styles.timeButtonText, { textAlign: "center" }]} accessible={false}>
+              <View style={settingsStyles.timeButton} accessible={false}>
+                <Text style={[settingsStyles.timeButtonText, { textAlign: "center" }]} accessible={false}>
                   {currentTimes.evening || "미설정"}
                 </Text>
               </View>
-              <Text style={[styles.timeInfoText, { textAlign: "center" }]} accessible={false}>
+              <Text style={[settingsStyles.timeInfoText, { textAlign: "center" }]} accessible={false}>
                 에요.
               </Text>
             </View>
           </View>
-          <Text style={[styles.instructionText, { textAlign: "center" }]} accessible={false}>
+          <Text style={[settingsStyles.instructionText, { textAlign: "center" }]} accessible={false}>
             시간대 변경을 원하신다면 두 번 눌러주세요.
           </Text>
         </TouchableOpacity>
         */}
 
         {/* 앱 정보 섹션 */}
-        <View style={styles.appInfoSection}>
-          <Text style={styles.sectionTitle}>앱 정보</Text>
-          <Text style={styles.appInfoText}>
+        <View style={settingsStyles.appInfoSection}>
+          <Text style={settingsStyles.sectionTitle}>앱 정보</Text>
+          <Text style={settingsStyles.appInfoText}>
             Eye-Hope v1.0.0{"\n"}
             개인 맞춤형 뉴스 알림 서비스
           </Text>
@@ -529,139 +540,3 @@ export default function SettingsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5EA",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#8E8E93",
-    lineHeight: 22,
-  },
-  loadingContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  loadingText: {
-    fontSize: 16,
-    color: "#8E8E93",
-  },
-  sectionHeaderSimple: {
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000000",
-  },
-  interestNewsSection: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-  },
-  categoriesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 16,
-    marginTop: 16,
-  },
-  categoryItemContainer: {
-    alignItems: "center",
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  categoryTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  categoryText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  questionText: {
-    fontSize: 16,
-    color: "#000000",
-    marginBottom: 8,
-  },
-  instructionText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  timeChangeSection: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-  },
-  timeInfoContainer: {
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  timeInfoText: {
-    fontSize: 16,
-    color: "#000000",
-    lineHeight: 22,
-  },
-  timeButtonsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    marginTop: 8,
-  },
-  timeButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginHorizontal: 4,
-  },
-  timeButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  appInfoSection: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    marginBottom: 30,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-  },
-  appInfoText: {
-    fontSize: 14,
-    color: "#8E8E93",
-    textAlign: "center",
-    lineHeight: 20,
-    marginTop: 8,
-  },
-});

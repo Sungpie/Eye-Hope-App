@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
@@ -18,7 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-// import { useBlockAllBackGestures } from "@/utils/gestureUtils"; // 유틸리티 임포트
+import { indexStyles } from "../../styles/indexStyles";
 
 interface NewsItem {
   id: string;
@@ -58,14 +57,6 @@ export default function InterestNewsScreen() {
     morning: string;
     evening: string;
   } | null>(null);
-
-  // 메인 화면에서 뒤로가기를 완전히 차단
-  // useBlockAllBackGestures(); // 주석 해제하여 사용
-
-  // 또는 더 세밀한 제어를 원한다면:
-  // useConditionalBackBlock(true, () => {
-  //   Alert.alert("알림", "이 화면에서는 뒤로가기를 할 수 없습니다.");
-  // });
 
   // 저장된 카테고리 불러오기
   useEffect(() => {
@@ -355,24 +346,26 @@ export default function InterestNewsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={indexStyles.container}>
         <View
           style={[
-            styles.header,
+            indexStyles.header,
             {
               paddingTop:
                 Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
             },
           ]}
         >
-          <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
-          <Text style={[styles.subtitle, { textAlign: "center" }]}>
+          <Text style={[indexStyles.title, { textAlign: "center" }]}>
+            관심뉴스
+          </Text>
+          <Text style={[indexStyles.subtitle, { textAlign: "center" }]}>
             뉴스를 불러오는 중...
           </Text>
         </View>
-        <View style={styles.loadingContainer}>
+        <View style={indexStyles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>뉴스를 불러오는 중입니다</Text>
+          <Text style={indexStyles.loadingText}>뉴스를 불러오는 중입니다</Text>
         </View>
       </SafeAreaView>
     );
@@ -380,32 +373,37 @@ export default function InterestNewsScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={indexStyles.container}>
         <View
           style={[
-            styles.header,
+            indexStyles.header,
             {
               paddingTop:
                 Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
             },
           ]}
         >
-          <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
-          <Text style={[styles.subtitle, { textAlign: "center" }]}>
+          <Text style={[indexStyles.title, { textAlign: "center" }]}>
+            관심뉴스
+          </Text>
+          <Text style={[indexStyles.subtitle, { textAlign: "center" }]}>
             {categories.length > 0
               ? `${categories.join(", ")} 카테고리의 최신 뉴스입니다`
               : "설정에서 관심 카테고리를 선택해주세요"}
           </Text>
         </View>
-        <View style={styles.errorContainer}>
+        <View style={indexStyles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
-          <Text style={styles.errorTitle}>정보를 불러오지 못했어요</Text>
-          <Text style={styles.errorMessage}>
+          <Text style={indexStyles.errorTitle}>정보를 불러오지 못했어요</Text>
+          <Text style={indexStyles.errorMessage}>
             다시 불러오기 버튼을 눌러 정보를 불러오세요!
           </Text>
-          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+          <TouchableOpacity
+            style={indexStyles.retryButton}
+            onPress={handleRetry}
+          >
             <Ionicons name="refresh" size={20} color="#FFFFFF" />
-            <Text style={styles.retryButtonText}>정보 불러오기</Text>
+            <Text style={indexStyles.retryButtonText}>정보 불러오기</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -413,19 +411,21 @@ export default function InterestNewsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={indexStyles.container}>
       {/* 상단 제목 */}
       <View
         style={[
-          styles.header,
+          indexStyles.header,
           {
             paddingTop:
               Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
           },
         ]}
       >
-        <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
-        <Text style={[styles.subtitle, { textAlign: "center" }]}>
+        <Text style={[indexStyles.title, { textAlign: "center" }]}>
+          관심뉴스
+        </Text>
+        <Text style={[indexStyles.subtitle, { textAlign: "center" }]}>
           {categories.length > 0
             ? `${categories.join(", ")} 카테고리의 최신 뉴스입니다`
             : "설정에서 관심 카테고리를 선택해주세요"}
@@ -434,47 +434,52 @@ export default function InterestNewsScreen() {
 
       {/* 뉴스 목록 */}
       <ScrollView
-        style={styles.content}
+        style={indexStyles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
         {newsData.length > 0 ? (
-          <View style={styles.newsSection}>
-            <Text style={styles.sectionTitle}>오늘의 주요 뉴스</Text>
-
+          <View style={indexStyles.newsList}>
             {newsData.map((news) => (
               <TouchableOpacity
                 key={news.id}
-                style={styles.newsCard}
+                style={indexStyles.newsItem}
                 onPress={() => handleNewsPress(news.url)}
                 activeOpacity={0.7}
               >
-                <View style={styles.newsHeader}>
-                  <Text
+                <View style={indexStyles.newsHeader}>
+                  <View
                     style={[
-                      styles.newsCategory,
+                      indexStyles.categoryBadge,
                       { backgroundColor: getCategoryColor(news.category) },
                     ]}
                   >
-                    {news.category}
-                  </Text>
-                  <Text style={styles.newsTime}>
+                    <Text style={indexStyles.categoryText}>
+                      {news.category}
+                    </Text>
+                  </View>
+                  <Text style={indexStyles.timeText}>
                     {formatTimeAgo(news.publishedAt)}
                   </Text>
                 </View>
-                <Text style={styles.newsTitle}>{news.title}</Text>
-                <Text style={styles.newsContent}>{news.content}</Text>
-                <Text style={styles.newsSource}>{news.source}</Text>
+                <Text style={indexStyles.newsTitle}>{news.title}</Text>
+                <Text style={indexStyles.newsContent}>{news.content}</Text>
+                <View style={indexStyles.newsFooter}>
+                  <Text style={indexStyles.newsSource}>{news.source}</Text>
+                  {news.url && (
+                    <Ionicons name="link-outline" size={14} color="#8E8E93" />
+                  )}
+                </View>
               </TouchableOpacity>
             ))}
           </View>
         ) : (
-          <View style={styles.emptyContainer}>
+          <View style={indexStyles.emptyContainer}>
             <Ionicons name="newspaper-outline" size={64} color="#C7C7CC" />
-            <Text style={styles.emptyTitle}>뉴스가 없습니다</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={indexStyles.emptyTitle}>뉴스가 없습니다</Text>
+            <Text style={indexStyles.emptySubtitle}>
               설정에서 관심 카테고리를 선택하거나{"\n"}인터넷 연결을
               확인해보세요.
             </Text>
@@ -483,10 +488,10 @@ export default function InterestNewsScreen() {
 
         {/* 선택된 시간 정보 표시 */}
         {selectedTimes && (
-          <View style={styles.timeInfoSection}>
-            <Text style={styles.timeInfoTitle}>설정된 알림 시간</Text>
-            <View style={styles.timeInfoContainer}>
-              <Text style={styles.timeInfoText}>
+          <View style={indexStyles.timeInfoSection}>
+            <Text style={indexStyles.timeInfoTitle}>설정된 알림 시간</Text>
+            <View style={indexStyles.timeInfoContainer}>
+              <Text style={indexStyles.timeInfoText}>
                 아침: {selectedTimes.morning} | 저녁: {selectedTimes.evening}
               </Text>
             </View>
@@ -496,184 +501,3 @@ export default function InterestNewsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5EA",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#8E8E93",
-    lineHeight: 22,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#8E8E93",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 60,
-    marginTop: 100,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FF3B30",
-    marginTop: 16,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: "#8E8E93",
-    textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  retryButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  retryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 60,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#8E8E93",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: "#C7C7CC",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  newsSection: {
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#000000",
-    marginBottom: 16,
-  },
-  newsCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  newsHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  newsCategory: {
-    color: "#FFFFFF",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-    fontSize: 16,
-    fontWeight: "700",
-    overflow: "hidden",
-  },
-  newsTime: {
-    fontSize: 12,
-    color: "#8E8E93",
-  },
-  newsTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#000000",
-    lineHeight: 24,
-    marginBottom: 12,
-  },
-  newsContent: {
-    fontSize: 15,
-    color: "#333333",
-    lineHeight: 22,
-    marginBottom: 12,
-  },
-  newsSource: {
-    fontSize: 14,
-    color: "#8E8E93",
-    fontStyle: "italic",
-  },
-  timeInfoSection: {
-    marginTop: 20,
-    marginBottom: 20,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E5EA",
-  },
-  timeInfoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000000",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  timeInfoContainer: {
-    alignItems: "center",
-  },
-  timeInfoText: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "500",
-    textAlign: "center",
-  },
-});

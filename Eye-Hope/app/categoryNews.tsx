@@ -15,6 +15,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { categoryNewsStyles } from "../styles/categoryNewsStyles";
 
 interface NewsItem {
   id: string;
@@ -354,10 +355,10 @@ export default function CategoryNewsScreen() {
 
   if (loading && newsData.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={categoryNewsStyles.container}>
         <View
           style={[
-            styles.header,
+            categoryNewsStyles.header,
             {
               paddingTop:
                 Platform.OS === "android"
@@ -366,15 +367,20 @@ export default function CategoryNewsScreen() {
             },
           ]}
         >
-          <Pressable style={styles.backButton} onPress={handleGoBack}>
+          <Pressable
+            style={categoryNewsStyles.backButton}
+            onPress={handleGoBack}
+          >
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </Pressable>
-          <Text style={styles.title}>{category} 뉴스</Text>
-          <View style={styles.placeholder} />
+          <Text style={categoryNewsStyles.title}>{category} 뉴스</Text>
+          <View style={categoryNewsStyles.placeholder} />
         </View>
-        <View style={styles.loadingContainer}>
+        <View style={categoryNewsStyles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>뉴스를 불러오는 중입니다</Text>
+          <Text style={categoryNewsStyles.loadingText}>
+            뉴스를 불러오는 중입니다
+          </Text>
         </View>
       </View>
     );
@@ -382,10 +388,10 @@ export default function CategoryNewsScreen() {
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={categoryNewsStyles.container}>
         <View
           style={[
-            styles.header,
+            categoryNewsStyles.header,
             {
               paddingTop:
                 Platform.OS === "android"
@@ -394,21 +400,31 @@ export default function CategoryNewsScreen() {
             },
           ]}
         >
-          <Pressable style={styles.backButton} onPress={handleGoBack}>
+          <Pressable
+            style={categoryNewsStyles.backButton}
+            onPress={handleGoBack}
+          >
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </Pressable>
-          <Text style={styles.title}>{category} 뉴스</Text>
-          <View style={styles.placeholder} />
+          <Text style={categoryNewsStyles.title}>{category} 뉴스</Text>
+          <View style={categoryNewsStyles.placeholder} />
         </View>
-        <View style={styles.errorContainer}>
+        <View style={categoryNewsStyles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
-          <Text style={styles.errorTitle}>정보를 불러오지 못했어요</Text>
-          <Text style={styles.errorMessage}>
+          <Text style={categoryNewsStyles.errorTitle}>
+            정보를 불러오지 못했어요
+          </Text>
+          <Text style={categoryNewsStyles.errorMessage}>
             다시 불러오기 버튼을 눌러 정보를 불러오세요!
           </Text>
-          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+          <TouchableOpacity
+            style={categoryNewsStyles.retryButton}
+            onPress={handleRetry}
+          >
             <Ionicons name="refresh" size={20} color="#FFFFFF" />
-            <Text style={styles.retryButtonText}>정보 불러오기</Text>
+            <Text style={categoryNewsStyles.retryButtonText}>
+              정보 불러오기
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -416,11 +432,11 @@ export default function CategoryNewsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={categoryNewsStyles.container}>
       {/* 상단 헤더 */}
       <View
         style={[
-          styles.header,
+          categoryNewsStyles.header,
           {
             paddingTop:
               Platform.OS === "android"
@@ -429,16 +445,16 @@ export default function CategoryNewsScreen() {
           },
         ]}
       >
-        <Pressable style={styles.backButton} onPress={handleGoBack}>
+        <Pressable style={categoryNewsStyles.backButton} onPress={handleGoBack}>
           <Ionicons name="chevron-back" size={24} color="#007AFF" />
         </Pressable>
-        <Text style={styles.title}>{category} 뉴스</Text>
-        <View style={styles.placeholder} />
+        <Text style={categoryNewsStyles.title}>{category} 뉴스</Text>
+        <View style={categoryNewsStyles.placeholder} />
       </View>
 
       {/* 뉴스 목록 */}
       <ScrollView
-        style={styles.content}
+        style={categoryNewsStyles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -462,8 +478,8 @@ export default function CategoryNewsScreen() {
       >
         {newsData.length > 0 ? (
           <>
-            <View style={styles.newsSection}>
-              <Text style={styles.sectionTitle}>
+            <View style={categoryNewsStyles.newsSection}>
+              <Text style={categoryNewsStyles.sectionTitle}>
                 {category} 관련 뉴스 ({newsData.length}개)
               </Text>
 
@@ -471,8 +487,8 @@ export default function CategoryNewsScreen() {
                 <Pressable
                   key={news.uniqueKey} // uniqueKey 사용으로 중복 방지
                   style={({ pressed }) => [
-                    styles.newsCard,
-                    pressed && styles.pressedNewsCard,
+                    categoryNewsStyles.newsCard,
+                    pressed && categoryNewsStyles.pressedNewsCard,
                   ]}
                   onPress={() => handleNewsPress(news.url || "")}
                   accessible={true}
@@ -480,32 +496,47 @@ export default function CategoryNewsScreen() {
                   accessibilityLabel={getNewsAccessibilityLabel(news)}
                   accessibilityHint="뉴스 원문을 보려면 두 번 탭하세요"
                 >
-                  <View style={styles.newsHeader} accessible={false}>
+                  <View
+                    style={categoryNewsStyles.newsHeader}
+                    accessible={false}
+                  >
                     <Text
                       style={[
-                        styles.newsCategory,
+                        categoryNewsStyles.newsCategory,
                         { backgroundColor: getCategoryColor(news.category) },
                       ]}
                       accessible={false}
                     >
                       {news.category}
                     </Text>
-                    <Text style={styles.newsTime} accessible={false}>
+                    <Text
+                      style={categoryNewsStyles.newsTime}
+                      accessible={false}
+                    >
                       {formatTimeAgo(news.publishedAt)}
                     </Text>
                   </View>
                   <Text
-                    style={styles.newsTitle}
+                    style={categoryNewsStyles.newsTitle}
                     numberOfLines={3}
                     accessible={false}
                   >
                     {news.title}
                   </Text>
-                  <Text style={styles.newsContent} accessible={false}>
+                  <Text
+                    style={categoryNewsStyles.newsContent}
+                    accessible={false}
+                  >
                     {news.content}
                   </Text>
-                  <View style={styles.newsFooter} accessible={false}>
-                    <Text style={styles.newsSource} accessible={false}>
+                  <View
+                    style={categoryNewsStyles.newsFooter}
+                    accessible={false}
+                  >
+                    <Text
+                      style={categoryNewsStyles.newsSource}
+                      accessible={false}
+                    >
                       {news.source}
                     </Text>
                     {news.url && (
@@ -518,9 +549,9 @@ export default function CategoryNewsScreen() {
 
             {/* 로딩 더 보기 */}
             {loading && (
-              <View style={styles.loadMoreContainer}>
+              <View style={categoryNewsStyles.loadMoreContainer}>
                 <ActivityIndicator size="small" color="#007AFF" />
-                <Text style={styles.loadMoreText}>
+                <Text style={categoryNewsStyles.loadMoreText}>
                   더 많은 뉴스를 불러오는 중...
                 </Text>
               </View>
@@ -528,22 +559,27 @@ export default function CategoryNewsScreen() {
 
             {/* 더 이상 뉴스가 없을 때 */}
             {!hasMore && newsData.length > 0 && (
-              <View style={styles.noMoreContainer}>
-                <Text style={styles.noMoreText}>모든 뉴스를 확인했습니다</Text>
+              <View style={categoryNewsStyles.noMoreContainer}>
+                <Text style={categoryNewsStyles.noMoreText}>
+                  모든 뉴스를 확인했습니다
+                </Text>
               </View>
             )}
           </>
         ) : (
-          <View style={styles.emptyContainer}>
+          <View style={categoryNewsStyles.emptyContainer}>
             <Ionicons name="newspaper-outline" size={64} color="#C7C7CC" />
-            <Text style={styles.emptyTitle}>뉴스가 없습니다</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={categoryNewsStyles.emptyTitle}>뉴스가 없습니다</Text>
+            <Text style={categoryNewsStyles.emptySubtitle}>
               {category} 관련 뉴스를 찾을 수 없습니다.{"\n"}새로고침을
               시도해보세요.
             </Text>
-            <Pressable style={styles.retryButton} onPress={handleRefresh}>
+            <Pressable
+              style={categoryNewsStyles.retryButton}
+              onPress={handleRefresh}
+            >
               <Ionicons name="refresh" size={20} color="#007AFF" />
-              <Text style={styles.retryButtonText}>다시 시도</Text>
+              <Text style={categoryNewsStyles.retryButtonText}>다시 시도</Text>
             </Pressable>
           </View>
         )}
@@ -551,194 +587,3 @@ export default function CategoryNewsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5EA",
-  },
-  backButton: {
-    padding: 8,
-    marginLeft: -8,
-  },
-  title: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000000",
-    textAlign: "center",
-  },
-  placeholder: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#8E8E93",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 60,
-    marginTop: 100,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FF3B30",
-    marginTop: 16,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: "#8E8E93",
-    textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  retryButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  retryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 60,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#8E8E93",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: "#C7C7CC",
-    textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  newsSection: {
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#000000",
-    marginBottom: 16,
-  },
-  newsCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  pressedNewsCard: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
-  },
-  newsHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  newsCategory: {
-    color: "#FFFFFF",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    fontSize: 14,
-    fontWeight: "600",
-    // backgroundColor은 동적으로 설정됩니다
-  },
-  newsTime: {
-    fontSize: 12,
-    color: "#8E8E93",
-  },
-  newsTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000000",
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  newsContent: {
-    fontSize: 14,
-    color: "#666666",
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  newsFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  newsSource: {
-    fontSize: 12,
-    color: "#8E8E93",
-    fontStyle: "italic",
-  },
-  loadMoreContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  loadMoreText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: "#8E8E93",
-  },
-  noMoreContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  noMoreText: {
-    fontSize: 14,
-    color: "#8E8E93",
-    fontStyle: "italic",
-  },
-});

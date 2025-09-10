@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { timeSelectStyles } from "../styles/timeSelectStyles";
 
 interface NotificationScheduleData {
   notificationTime: string[];
@@ -153,7 +154,10 @@ export default function TimeSelectScreen() {
     accessibilityLabel: string
   ) => (
     <Pressable
-      style={[styles.timeButton, isSelected && styles.selectedTimeButton]}
+      style={[
+        timeSelectStyles.timeButton,
+        isSelected && timeSelectStyles.selectedTimeButton,
+      ]}
       onPress={onPress}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
@@ -162,8 +166,8 @@ export default function TimeSelectScreen() {
     >
       <Text
         style={[
-          styles.timeButtonText,
-          isSelected && styles.selectedTimeButtonText,
+          timeSelectStyles.timeButtonText,
+          isSelected && timeSelectStyles.selectedTimeButtonText,
         ]}
       >
         {time}
@@ -172,20 +176,20 @@ export default function TimeSelectScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={timeSelectStyles.container}>
       {/* 상단 안내 문구 */}
-      <View style={styles.instructionContainer}>
-        <Text style={styles.instructionText}>
+      <View style={timeSelectStyles.instructionContainer}>
+        <Text style={timeSelectStyles.instructionText}>
           {fromSettings === "true"
             ? "새로운 알림 시간을 선택해주세요."
             : "매일 아침 / 저녁으로 핫한 뉴스를 알림으로 보내드려요."}
         </Text>
         {fromSettings !== "true" && (
-          <Text style={styles.instructionTextBlue}>
+          <Text style={timeSelectStyles.instructionTextBlue}>
             어느 시간 대를 원하는지 골라주세요.
           </Text>
         )}
-        <Text style={styles.instructionSubText}>
+        <Text style={timeSelectStyles.instructionSubText}>
           {fromSettings === "true"
             ? "(시간을 선택하지 않으면 기존 설정이 유지됩니다)"
             : "(알림 시간은 선택사항입니다)"}
@@ -194,18 +198,18 @@ export default function TimeSelectScreen() {
 
       {/* 시간 선택 영역 */}
       <ScrollView
-        style={styles.timeSelectionContainer}
+        style={timeSelectStyles.timeSelectionContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.timeGridContainer}>
+        <View style={timeSelectStyles.timeGridContainer}>
           {/* 아침 섹션 */}
-          <View style={styles.timeSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>아침</Text>
+          <View style={timeSelectStyles.timeSection}>
+            <View style={timeSelectStyles.sectionHeader}>
+              <Text style={timeSelectStyles.sectionHeaderText}>아침</Text>
             </View>
-            <View style={styles.timeButtonsContainer}>
+            <View style={timeSelectStyles.timeButtonsContainer}>
               {morningTimes.map((time) => (
-                <View key={time} style={styles.timeButtonWrapper}>
+                <View key={time} style={timeSelectStyles.timeButtonWrapper}>
                   {renderTimeButton(
                     time,
                     selectedMorningTime === time,
@@ -218,13 +222,13 @@ export default function TimeSelectScreen() {
           </View>
 
           {/* 저녁 섹션 */}
-          <View style={styles.timeSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>저녁</Text>
+          <View style={timeSelectStyles.timeSection}>
+            <View style={timeSelectStyles.sectionHeader}>
+              <Text style={timeSelectStyles.sectionHeaderText}>저녁</Text>
             </View>
-            <View style={styles.timeButtonsContainer}>
+            <View style={timeSelectStyles.timeButtonsContainer}>
               {eveningTimes.map((time) => (
-                <View key={time} style={styles.timeButtonWrapper}>
+                <View key={time} style={timeSelectStyles.timeButtonWrapper}>
                   {renderTimeButton(
                     time,
                     selectedEveningTime === time,
@@ -239,12 +243,12 @@ export default function TimeSelectScreen() {
       </ScrollView>
 
       {/* 하단 완료 버튼 */}
-      <View style={styles.buttonContainer}>
+      <View style={timeSelectStyles.buttonContainer}>
         <Pressable
           style={({ pressed }) => [
-            styles.completeButton,
-            pressed && styles.pressedButton,
-            loading && styles.disabledButton,
+            timeSelectStyles.completeButton,
+            pressed && timeSelectStyles.pressedButton,
+            loading && timeSelectStyles.disabledButton,
           ]}
           onPress={handleComplete}
           disabled={loading}
@@ -261,8 +265,8 @@ export default function TimeSelectScreen() {
           ) : (
             <Text
               style={[
-                styles.completeButtonText,
-                loading && styles.disabledButtonText,
+                timeSelectStyles.completeButtonText,
+                loading && timeSelectStyles.disabledButtonText,
               ]}
             >
               {fromSettings === "true" ? "저장" : "다음"}
@@ -271,7 +275,7 @@ export default function TimeSelectScreen() {
         </Pressable>
 
         {/* 시간 선택 안내 텍스트 */}
-        <Text style={styles.skipText}>
+        <Text style={timeSelectStyles.skipText}>
           {fromSettings === "true"
             ? "변경사항이 즉시 적용됩니다"
             : "알림 시간은 나중에 설정에서 변경할 수 있습니다"}
@@ -279,8 +283,8 @@ export default function TimeSelectScreen() {
 
         {/* 선택된 시간 표시 (디버그용) */}
         {(selectedMorningTime || selectedEveningTime) && (
-          <View style={styles.selectedTimeDebug}>
-            <Text style={styles.debugText}>
+          <View style={timeSelectStyles.selectedTimeDebug}>
+            <Text style={timeSelectStyles.debugText}>
               선택된 시간: {selectedMorningTime || "미선택"} /{" "}
               {selectedEveningTime || "미선택"}
             </Text>
@@ -290,156 +294,3 @@ export default function TimeSelectScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  instructionContainer: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    marginBottom: 20,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-  },
-  instructionText: {
-    fontSize: 16,
-    textAlign: "center",
-    color: "#000000",
-    lineHeight: 24,
-    marginBottom: 8,
-  },
-  instructionTextBlue: {
-    fontSize: 16,
-    textAlign: "center",
-    color: "#007AFF",
-    lineHeight: 24,
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  instructionSubText: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#8E8E93",
-    lineHeight: 20,
-  },
-  timeSelectionContainer: {
-    flex: 1,
-    marginHorizontal: 20,
-  },
-  timeGridContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  timeSection: {
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  sectionHeader: {
-    backgroundColor: "#87CEEB",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    alignItems: "center",
-  },
-  sectionHeaderText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  timeButtonsContainer: {
-    alignItems: "center",
-  },
-  timeButtonWrapper: {
-    marginBottom: 12,
-    width: "100%",
-  },
-  timeButton: {
-    backgroundColor: "#87CEEB",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-  },
-  selectedTimeButton: {
-    backgroundColor: "#007AFF",
-  },
-  timeButtonText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#FFFFFF",
-  },
-  selectedTimeButtonText: {
-    color: "#FFFFFF",
-  },
-  buttonContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    alignItems: "center",
-  },
-  completeButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 8,
-    backgroundColor: "#007AFF",
-    minWidth: 120,
-    alignItems: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    marginBottom: 12,
-  },
-  disabledButton: {
-    backgroundColor: "#C7C7CC",
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  pressedButton: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
-  },
-  completeButtonText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  disabledButtonText: {
-    color: "#8E8E93",
-  },
-  skipText: {
-    fontSize: 12,
-    color: "#8E8E93",
-    textAlign: "center",
-    lineHeight: 16,
-  },
-  selectedTimeDebug: {
-    marginTop: 12,
-    padding: 8,
-    backgroundColor: "#FFF3CD",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#FFE69C",
-  },
-  debugText: {
-    fontSize: 12,
-    color: "#856404",
-    textAlign: "center",
-    fontWeight: "500",
-  },
-});

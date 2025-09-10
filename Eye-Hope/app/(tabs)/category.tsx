@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { categoryStyles } from "../../styles/categoryStyles";
 
 export default function CategoryScreen() {
   const router = useRouter();
@@ -63,20 +64,22 @@ export default function CategoryScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={categoryStyles.container}>
       {/* 상단 제목 */}
       <View
         style={[
-          styles.header,
+          categoryStyles.header,
           {
             paddingTop:
               Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
           },
         ]}
       >
-        <View style={styles.titleContainer}>
-          <Text style={[styles.title, { textAlign: "center" }]}>카테고리</Text>
-          <Text style={styles.subtitle}>
+        <View style={categoryStyles.titleContainer}>
+          <Text style={[categoryStyles.title, { textAlign: "center" }]}>
+            카테고리
+          </Text>
+          <Text style={categoryStyles.subtitle}>
             <Text style={{ textAlign: "center" }}>
               원하는 카테고리를 선택해서 최신 뉴스를 확인하세요
             </Text>
@@ -85,30 +88,33 @@ export default function CategoryScreen() {
       </View>
 
       {/* 카테고리 그리드 */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.categoriesGrid}>
+      <ScrollView
+        style={categoryStyles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={categoryStyles.categoriesGrid}>
           {categories.map((category) => (
             <Pressable
               key={category.name}
               style={({ pressed }) => [
-                styles.categoryButton,
+                categoryStyles.categoryButton,
                 { backgroundColor: category.color },
-                pressed && styles.pressedCategoryButton,
+                pressed && categoryStyles.pressedCategoryButton,
               ]}
               onPress={() => handleCategoryPress(category.name)}
               accessibilityLabel={`${category.name} 카테고리`}
               accessibilityRole="button"
               accessibilityHint={`${category.name} 카테고리의 뉴스를 보려면 두 번 탭하세요`}
             >
-              <View style={styles.categoryContent}>
+              <View style={categoryStyles.categoryContent}>
                 <Ionicons
                   name={category.icon}
                   size={32}
                   color="#FFFFFF"
-                  style={styles.categoryIcon}
+                  style={categoryStyles.categoryIcon}
                 />
-                <Text style={styles.categoryText}>{category.name}</Text>
-                <View style={styles.arrowIcon}>
+                <Text style={categoryStyles.categoryText}>{category.name}</Text>
+                <View style={categoryStyles.arrowIcon}>
                   <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
                 </View>
               </View>
@@ -117,12 +123,12 @@ export default function CategoryScreen() {
         </View>
 
         {/* 안내 메시지 */}
-        <View style={styles.infoSection}>
-          <View style={styles.infoCard}>
+        <View style={categoryStyles.infoSection}>
+          <View style={categoryStyles.infoCard}>
             <Ionicons name="information-circle" size={24} color="#007AFF" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>카테고리별 뉴스 보기</Text>
-              <Text style={styles.infoDescription}>
+            <View style={categoryStyles.infoTextContainer}>
+              <Text style={categoryStyles.infoTitle}>카테고리별 뉴스 보기</Text>
+              <Text style={categoryStyles.infoDescription}>
                 각 카테고리를 터치하면 해당 분야의 최신 뉴스를 확인할 수
                 있습니다. 실시간으로 업데이트되는 뉴스를 놓치지 마세요!
               </Text>
@@ -133,120 +139,3 @@ export default function CategoryScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5EA",
-  },
-  titleContainer: {
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#8E8E93",
-    lineHeight: 22,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  categoriesGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  categoryButton: {
-    width: "48%",
-    height: 120,
-    borderRadius: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  pressedCategoryButton: {
-    opacity: 0.8,
-    transform: [{ scale: 0.95 }],
-  },
-  categoryContent: {
-    flex: 1,
-    padding: 16,
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  categoryIcon: {
-    marginBottom: 8,
-  },
-  categoryText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  arrowIcon: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  infoSection: {
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  infoCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  infoTextContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000000",
-    marginBottom: 4,
-  },
-  infoDescription: {
-    fontSize: 14,
-    color: "#666666",
-    lineHeight: 20,
-  },
-});
