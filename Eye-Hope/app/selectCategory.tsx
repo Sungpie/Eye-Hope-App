@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -70,7 +71,9 @@ export default function SelectCategoryScreen() {
     <View style={styles.container}>
       {/* 상단 헤더 - 설정 페이지에서 온 경우에만 표시 */}
       {fromSettings === "true" && (
-        <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
+        <View
+          style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}
+        >
           <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </TouchableOpacity>
@@ -80,12 +83,37 @@ export default function SelectCategoryScreen() {
       )}
 
       {/* 상단 안내 문구 */}
-      <View style={styles.instructionContainer}>
-        <Text style={styles.instructionText}>
+      <View
+        style={[
+          styles.instructionContainer,
+          {
+            marginTop:
+              Platform.OS === "android" ? Math.max(insets.top + 10, 70) : 75,
+          },
+        ]}
+      >
+        <Text
+          style={[
+            styles.instructionText,
+            {
+              color: "#000000",
+              fontSize: 18,
+              fontWeight: "bold",
+            },
+          ]}
+        >
           관심 분야 선택을 진행하겠습니다.
         </Text>
-        <Text style={styles.instructionText}>
-          총 12개의 분야 중, 원하는 뉴스 기사 분야를{'\n'}
+        <Text
+          style={[
+            styles.instructionText,
+            {
+              color: "#333333",
+              fontSize: 16,
+            },
+          ]}
+        >
+          총 12개의 분야 중, 원하는 뉴스 기사 분야를{"\n"}
           최대 5개까지 선택해주세요.
         </Text>
       </View>
@@ -193,7 +221,6 @@ const styles = StyleSheet.create({
   },
   instructionContainer: {
     marginHorizontal: 20,
-    marginTop: 20,
     marginBottom: 30,
     padding: 16,
     borderWidth: 1,

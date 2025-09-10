@@ -1,5 +1,13 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
@@ -8,14 +16,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // 카테고리 매핑 함수들
 const categoryToId = (category: string): number => {
   const mapping: { [key: string]: number } = {
-    "경제": 1,
-    "증권": 2,
-    "스포츠": 3,
-    "연예": 4,
-    "정치": 5,
-    "IT": 6,
-    "사회": 7,
-    "오피니언": 8,
+    경제: 1,
+    증권: 2,
+    스포츠: 3,
+    연예: 4,
+    정치: 5,
+    IT: 6,
+    사회: 7,
+    오피니언: 8,
   };
   return mapping[category] || 0;
 };
@@ -23,7 +31,7 @@ const categoryToId = (category: string): number => {
 const idToCategory = (id: number): string => {
   const mapping: { [key: number]: string } = {
     1: "경제",
-    2: "증권", 
+    2: "증권",
     3: "스포츠",
     4: "연예",
     5: "정치",
@@ -63,22 +71,25 @@ export default function ConfirmationScreen() {
   const checkUserExists = async (deviceId: string): Promise<boolean> => {
     try {
       console.log("👤 사용자 존재 여부 확인 중:", deviceId);
-      
-      const response = await fetch(`http://13.124.111.205:8080/api/users/${encodeURIComponent(deviceId)}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+
+      const response = await fetch(
+        `http://13.124.111.205:8080/api/users/${encodeURIComponent(deviceId)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("👤 사용자 존재 확인 응답 상태:", response.status);
-      
+
       if (response.ok) {
         const result = await response.json();
         console.log("👤 사용자 존재 확인 응답:", result);
         return result.success && result.data;
       }
-      
+
       return false;
     } catch (error) {
       console.error("👤 사용자 존재 확인 오류:", error);
@@ -86,65 +97,32 @@ export default function ConfirmationScreen() {
     }
   };
 
-  // 사용자 등록 API 호출
+  // 사용자 등록 API 호출 - POST 요청 제거됨
   const registerUser = async (userData: UserRegistrationData) => {
     try {
-      console.log("👤 === 사용자 등록 API 호출 시작 ===");
-      console.log("📤 전송 데이터:", JSON.stringify(userData, null, 2));
-      
-      const response = await fetch("http://13.124.111.205:8080/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          deviceId: userData.deviceId,
-          name: userData.name || null,
-          email: userData.email || null,
-          nickname: userData.nickname,
-          password: null,
-        }),
-      });
+      console.log("👤 === 사용자 등록 (로컬 저장만) ===");
+      console.log("📤 저장할 데이터:", JSON.stringify(userData, null, 2));
 
-      const result = await response.json();
-      console.log("👤 사용자 등록 응답:", result);
+      // POST 요청 대신 로컬 저장만 수행
+      console.log("✅ 사용자 정보가 로컬에 저장되었습니다");
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "사용자 등록에 실패했습니다.");
-      }
-
-      return result;
+      return { success: true, message: "사용자 정보가 로컬에 저장되었습니다" };
     } catch (error) {
       console.error("👤 사용자 등록 오류:", error);
       throw error;
     }
   };
 
-  // 백엔드에 사용자 관심 뉴스 저장
+  // 백엔드에 사용자 관심 뉴스 저장 - POST 요청 제거됨
   const saveUserNews = async (newsData: UserNewsData) => {
     try {
-      console.log("📰 === 사용자 관심 뉴스 저장 API 호출 시작 ===");
-      console.log("📤 전송 데이터:", JSON.stringify(newsData, null, 2));
-      
-      const response = await fetch("http://13.124.111.205:8080/api/users/news", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newsData),
-      });
+      console.log("📰 === 사용자 관심 뉴스 저장 (로컬 저장만) ===");
+      console.log("📤 저장할 데이터:", JSON.stringify(newsData, null, 2));
 
-      console.log("📥 응답 상태:", response.status);
-      
-      const result = await response.json();
-      console.log("📥 응답 데이터:", JSON.stringify(result, null, 2));
-      console.log("📰 === 사용자 관심 뉴스 저장 API 호출 종료 ===");
+      // POST 요청 대신 로컬 저장만 수행
+      console.log("✅ 관심 뉴스가 로컬에 저장되었습니다");
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "관심 뉴스 저장에 실패했습니다.");
-      }
-
-      return result;
+      return { success: true, message: "관심 뉴스가 로컬에 저장되었습니다" };
     } catch (error) {
       console.error("🚨 관심 뉴스 저장 오류:", error);
       throw error;
@@ -178,7 +156,7 @@ export default function ConfirmationScreen() {
       // 사용자가 존재하지 않으면 먼저 등록
       if (!userExists) {
         console.log("⚠️ 사용자가 존재하지 않음 - 먼저 사용자 등록 진행");
-        
+
         // 로컬 스토리지에서 사용자 정보 확인
         let userInfo = null;
         const savedUserInfo = await AsyncStorage.getItem("userInfo");
@@ -192,7 +170,7 @@ export default function ConfirmationScreen() {
 
         // 사용자 정보가 없으면 기본 닉네임으로 등록
         const nickname = userInfo?.nickname || "사용자";
-        
+
         const userRegistrationData: UserRegistrationData = {
           deviceId: deviceId,
           name: undefined,
@@ -206,16 +184,18 @@ export default function ConfirmationScreen() {
           console.log("✅ 사용자 등록 성공");
 
           // 사용자 정보를 AsyncStorage에 저장
-          await AsyncStorage.setItem("userInfo", JSON.stringify({
-            deviceId: deviceId,
-            name: "",
-            email: "",
-            nickname: nickname,
-          }));
-
+          await AsyncStorage.setItem(
+            "userInfo",
+            JSON.stringify({
+              deviceId: deviceId,
+              name: "",
+              email: "",
+              nickname: nickname,
+            })
+          );
         } catch (registerError) {
           console.error("❌ 사용자 등록 실패:", registerError);
-          
+
           Alert.alert(
             "사용자 등록 실패",
             "사용자 등록에 실패했습니다. 처음부터 다시 시작하시겠습니까?",
@@ -229,11 +209,11 @@ export default function ConfirmationScreen() {
                 onPress: () => {
                   // 로컬 데이터 모두 삭제 후 처음부터
                   AsyncStorage.multiRemove([
-                    "setupCompleted", 
-                    "userCategories", 
-                    "userTimes", 
+                    "setupCompleted",
+                    "userCategories",
+                    "userTimes",
                     "userInfo",
-                    "deviceId"
+                    "deviceId",
                   ]).then(() => {
                     router.replace("/selectCategory");
                   });
@@ -246,7 +226,9 @@ export default function ConfirmationScreen() {
       }
 
       // 카테고리를 ID로 변환
-      const newsIds = selectedCategories.map((category: string) => categoryToId(category));
+      const newsIds = selectedCategories.map((category: string) =>
+        categoryToId(category)
+      );
       console.log("변환된 뉴스 ID:", newsIds);
 
       // 백엔드에 관심 뉴스 저장
@@ -259,7 +241,10 @@ export default function ConfirmationScreen() {
       console.log("✅ 관심 뉴스가 백엔드에 저장되었습니다");
 
       // 로컬스토리지에도 저장 (캐시용)
-      await AsyncStorage.setItem("userCategories", JSON.stringify(selectedCategories));
+      await AsyncStorage.setItem(
+        "userCategories",
+        JSON.stringify(selectedCategories)
+      );
       console.log("✅ 관심 뉴스가 로컬에도 저장되었습니다");
 
       // fromSettings 파라미터 확인
@@ -273,71 +258,105 @@ export default function ConfirmationScreen() {
           },
         });
       } else {
-        console.log("사용자 등록으로 이동");
-        // 일반 플로우라면 바로 사용자 등록 화면으로 이동 (알림 시간은 빈 배열로 전송)
+        console.log("설정 완료 - 메인 탭으로 이동");
+        // 일반 플로우라면 바로 메인 탭으로 이동
+
+        // 설정 완료 플래그 저장
+        await AsyncStorage.setItem("setupCompleted", "true");
+
+        // 기본 사용자 정보를 AsyncStorage에 저장
+        await AsyncStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            deviceId: deviceId,
+            name: "",
+            email: "",
+            nickname: "사용자",
+          })
+        );
+
         router.push({
-          pathname: "/userRegistration",
-          params: { 
+          pathname: "/(tabs)",
+          params: {
             categories: JSON.stringify(selectedCategories),
-            selectedTimes: JSON.stringify({ morning: "", evening: "" })
+            selectedTimes: JSON.stringify({ morning: "", evening: "" }),
           },
         });
       }
-
     } catch (error) {
       console.error("❌ 관심 뉴스 저장 오류:", error);
-      
-      const errorMessage = error instanceof Error ? error.message : "관심 뉴스 저장 중 오류가 발생했습니다.";
-      
-      Alert.alert(
-        "오류",
-        errorMessage,
-        [
-          {
-            text: "그래도 진행",
-            onPress: () => {
-              // 오류가 발생해도 로컬에만 저장하고 진행
-              AsyncStorage.setItem("userCategories", JSON.stringify(selectedCategories));
-              
-              if (fromSettings === "true") {
-                router.push({
-                  pathname: "/(tabs)/settings",
-                  params: {
-                    selectedCategories: JSON.stringify(selectedCategories),
-                  },
-                });
-              } else {
-                router.push({
-                  pathname: "/userRegistration",
-                  params: { 
-                    categories: JSON.stringify(selectedCategories),
-                    selectedTimes: JSON.stringify({ morning: "", evening: "" })
-                  },
-                });
-              }
-            },
-          },
-          {
-            text: "처음부터 다시",
-            onPress: () => {
-              // 로컬 데이터 모두 삭제 후 처음부터
-              AsyncStorage.multiRemove([
-                "setupCompleted", 
-                "userCategories", 
-                "userTimes", 
-                "userInfo",
-                "deviceId"
-              ]).then(() => {
-                router.replace("/selectCategory");
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "관심 뉴스 저장 중 오류가 발생했습니다.";
+
+      Alert.alert("오류", errorMessage, [
+        {
+          text: "그래도 진행",
+          onPress: () => {
+            // 오류가 발생해도 로컬에만 저장하고 진행
+            AsyncStorage.setItem(
+              "userCategories",
+              JSON.stringify(selectedCategories)
+            );
+
+            if (fromSettings === "true") {
+              router.push({
+                pathname: "/(tabs)/settings",
+                params: {
+                  selectedCategories: JSON.stringify(selectedCategories),
+                },
               });
-            },
+            } else {
+              // 설정 완료 플래그 저장
+              AsyncStorage.setItem("setupCompleted", "true");
+
+              // 기본 사용자 정보를 AsyncStorage에 저장
+              AsyncStorage.getItem("deviceId").then((deviceId) => {
+                if (deviceId) {
+                  AsyncStorage.setItem(
+                    "userInfo",
+                    JSON.stringify({
+                      deviceId: deviceId,
+                      name: "",
+                      email: "",
+                      nickname: "사용자",
+                    })
+                  );
+                }
+              });
+
+              router.push({
+                pathname: "/(tabs)",
+                params: {
+                  categories: JSON.stringify(selectedCategories),
+                  selectedTimes: JSON.stringify({ morning: "", evening: "" }),
+                },
+              });
+            }
           },
-          {
-            text: "재시도",
-            style: "cancel",
+        },
+        {
+          text: "처음부터 다시",
+          onPress: () => {
+            // 로컬 데이터 모두 삭제 후 처음부터
+            AsyncStorage.multiRemove([
+              "setupCompleted",
+              "userCategories",
+              "userTimes",
+              "userInfo",
+              "deviceId",
+            ]).then(() => {
+              router.replace("/selectCategory");
+            });
           },
-        ]
-      );
+        },
+        {
+          text: "재시도",
+          style: "cancel",
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -346,7 +365,12 @@ export default function ConfirmationScreen() {
   return (
     <View style={styles.container}>
       {/* 상단 안내 문구 박스 */}
-      <View style={[styles.instructionContainer, { marginTop: Math.max(insets.top + 20, 30) }]}>
+      <View
+        style={[
+          styles.instructionContainer,
+          { marginTop: Math.max(insets.top + 20, 30) },
+        ]}
+      >
         <Text style={styles.instructionText}>
           선택하신 뉴스 기사를 확인할게요.
         </Text>
@@ -357,7 +381,14 @@ export default function ConfirmationScreen() {
         {selectedCategories.map((category: string, index: number) => (
           <View key={index} style={styles.categoryItem}>
             <View style={styles.diamondIcon}>
-              <Text style={styles.diamondText}>{category}</Text>
+              <Text
+                style={[
+                  styles.diamondText,
+                  Platform.OS === "android" && { fontSize: 20 },
+                ]}
+              >
+                {category}
+              </Text>
             </View>
           </View>
         ))}
@@ -391,7 +422,12 @@ export default function ConfirmationScreen() {
           {loading ? (
             <ActivityIndicator color="#000000" />
           ) : (
-            <Text style={[styles.confirmButtonText, loading && styles.disabledButtonText]}>
+            <Text
+              style={[
+                styles.confirmButtonText,
+                loading && styles.disabledButtonText,
+              ]}
+            >
               맞아요
             </Text>
           )}
@@ -493,7 +529,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: 13,
     paddingHorizontal: 16,
     borderRadius: 8,
     alignItems: "center",
@@ -522,7 +558,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   confirmButtonText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "600",
     color: "#000000",
     textAlign: "center",
@@ -531,10 +567,10 @@ const styles = StyleSheet.create({
     color: "#8E8E93",
   },
   modifyButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#000000",
     textAlign: "center",
-    lineHeight: 28,
+    lineHeight: 24,
   },
 });

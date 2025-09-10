@@ -241,7 +241,7 @@ export default function InterestNewsScreen() {
       setLoading(false);
     }
   };
-  
+
   // [추가된 부분] 뉴스 카드를 눌렀을 때 실행될 함수
   const handleNewsPress = async (url: string) => {
     if (!url) {
@@ -288,9 +288,19 @@ export default function InterestNewsScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 20, 30) : 20 }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              paddingTop:
+                Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
+            },
+          ]}
+        >
           <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
-          <Text style={[styles.subtitle, { textAlign: "center" }]}>뉴스를 불러오는 중...</Text>
+          <Text style={[styles.subtitle, { textAlign: "center" }]}>
+            뉴스를 불러오는 중...
+          </Text>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
@@ -303,7 +313,15 @@ export default function InterestNewsScreen() {
   if (error) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 20, 30) : 20 }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              paddingTop:
+                Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
+            },
+          ]}
+        >
           <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
           <Text style={[styles.subtitle, { textAlign: "center" }]}>
             {categories.length > 0
@@ -329,7 +347,15 @@ export default function InterestNewsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 제목 */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? Math.max(insets.top + 20, 30) : 20 }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop:
+              Platform.OS === "android" ? Math.max(insets.top + 20, 30) : 20,
+          },
+        ]}
+      >
         <Text style={[styles.title, { textAlign: "center" }]}>관심뉴스</Text>
         <Text style={[styles.subtitle, { textAlign: "center" }]}>
           {categories.length > 0
