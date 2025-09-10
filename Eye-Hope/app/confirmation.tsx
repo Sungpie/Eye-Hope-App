@@ -380,6 +380,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     alignItems: "center",
+    justifyContent: "center",
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: {
