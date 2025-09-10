@@ -74,31 +74,13 @@ export default function CategoryScreen() {
           },
         ]}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.placeholder} />
-          <View style={styles.titleContainer}>
-            <Text style={[styles.title, { textAlign: "center" }]}>
-              카테고리
+        <View style={styles.titleContainer}>
+          <Text style={[styles.title, { textAlign: "center" }]}>카테고리</Text>
+          <Text style={styles.subtitle}>
+            <Text style={{ textAlign: "center" }}>
+              원하는 카테고리를 선택해서 최신 뉴스를 확인하세요
             </Text>
-            <Text style={styles.subtitle}>
-              <Text style={{ textAlign: "center" }}>
-                원하는 카테고리를 선택해서 최신 뉴스를 확인하세요
-              </Text>
-            </Text>
-          </View>
-          <Pressable
-            style={styles.settingsButton}
-            onPress={() =>
-              router.push({
-                pathname: "/(tabs)/settings",
-                params: { fromCategory: "true" },
-              })
-            }
-            accessibilityLabel="설정 페이지로 이동"
-            accessibilityRole="button"
-          >
-            <Ionicons name="settings-outline" size={24} color="#007AFF" />
-          </Pressable>
+          </Text>
         </View>
       </View>
 
@@ -165,22 +147,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5EA",
   },
-  headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   titleContainer: {
-    flex: 1,
     alignItems: "center",
-  },
-  settingsButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#F2F2F7",
-  },
-  placeholder: {
-    width: 40,
   },
   title: {
     fontSize: 28,
