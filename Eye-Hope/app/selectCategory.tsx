@@ -126,7 +126,7 @@ export default function SelectCategoryScreen() {
             },
           ]}
         >
-          총 12개의 분야 중, 원하는 뉴스 기사 분야를{"\n"}
+          총 8개의 분야 중, 원하는 뉴스 기사 분야를{"\n"}
           최대 5개까지 선택해주세요.
         </Text>
       </View>

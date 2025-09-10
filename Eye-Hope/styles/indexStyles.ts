@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const indexStyles = StyleSheet.create({
   container: {
@@ -133,9 +133,9 @@ export const indexStyles = StyleSheet.create({
     justifyContent: "space-between",
   },
   newsSource: {
-    fontSize: 12,
+    fontSize: Platform.OS === "android" ? 10 : 12,
     color: "#8E8E93",
-    fontStyle: "italic",
+    fontStyle: Platform.OS === "android" ? "normal" : "italic",
   },
   emptyContainer: {
     flex: 1,

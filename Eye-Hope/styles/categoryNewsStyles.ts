@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const categoryNewsStyles = StyleSheet.create({
   container: {
@@ -165,9 +165,9 @@ export const categoryNewsStyles = StyleSheet.create({
     alignItems: "center",
   },
   newsSource: {
-    fontSize: 12,
+    fontSize: Platform.OS === "android" ? 10 : 12,
     color: "#8E8E93",
-    fontStyle: "italic",
+    fontStyle: Platform.OS === "android" ? "normal" : "italic",
   },
   loadMoreContainer: {
     flexDirection: "row",
