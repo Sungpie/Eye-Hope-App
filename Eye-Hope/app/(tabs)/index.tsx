@@ -356,6 +356,21 @@ export default function InterestNewsScreen() {
     return `${diffInDays}일 전`;
   };
 
+  // 접근성을 위한 뉴스 카드 텍스트 생성 함수 추가
+  const getNewsAccessibilityLabel = (news: NewsItem) => {
+    let label = `${news.category} 카테고리 뉴스. `;
+    label += `제목: ${news.title}. `;
+    label += `내용: ${news.content}. `;
+    label += `출처: ${news.source}. `;
+    label += `${formatTimeAgo(news.publishedAt)}. `;
+    if (news.url) {
+      label += `원문 링크 있음. `;
+    }
+    label += `뉴스를 자세히 보려면 두 번 탭하세요.`;
+
+    return label;
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={indexStyles.container}>
@@ -460,26 +475,37 @@ export default function InterestNewsScreen() {
                 style={indexStyles.newsItem}
                 onPress={() => handleNewsPress(news.url)}
                 activeOpacity={0.7}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={getNewsAccessibilityLabel(news)}
+                accessibilityHint="뉴스 원문을 보려면 두 번 탭하세요"
               >
-                <View style={indexStyles.newsHeader}>
+                <View style={indexStyles.newsHeader} accessible={false}>
                   <View
                     style={[
                       indexStyles.categoryBadge,
                       { backgroundColor: getCategoryColor(news.category) },
                     ]}
+                    accessible={false}
                   >
-                    <Text style={indexStyles.categoryText}>
+                    <Text style={indexStyles.categoryText} accessible={false}>
                       {news.category}
                     </Text>
                   </View>
-                  <Text style={indexStyles.timeText}>
+                  <Text style={indexStyles.timeText} accessible={false}>
                     {formatTimeAgo(news.publishedAt)}
                   </Text>
                 </View>
-                <Text style={indexStyles.newsTitle}>{news.title}</Text>
-                <Text style={indexStyles.newsContent}>{news.content}</Text>
-                <View style={indexStyles.newsFooter}>
-                  <Text style={indexStyles.newsSource}>{news.source}</Text>
+                <Text style={indexStyles.newsTitle} accessible={false}>
+                  {news.title}
+                </Text>
+                <Text style={indexStyles.newsContent} accessible={false}>
+                  {news.content}
+                </Text>
+                <View style={indexStyles.newsFooter} accessible={false}>
+                  <Text style={indexStyles.newsSource} accessible={false}>
+                    {news.source}
+                  </Text>
                   {news.url && (
                     <Ionicons name="link-outline" size={14} color="#8E8E93" />
                   )}
