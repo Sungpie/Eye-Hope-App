@@ -346,9 +346,8 @@ export default function CategoryNewsScreen() {
     label += `출처: ${news.source}. `;
     label += `${formatTimeAgo(news.publishedAt)}. `;
     if (news.url) {
-      label += `원문 링크 있음. `;
+      label += `원문 링크 있음.`;
     }
-    label += `뉴스를 자세히 보려면 두 번 탭하세요.`;
 
     return label;
   };
