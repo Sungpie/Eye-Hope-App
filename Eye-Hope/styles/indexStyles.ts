@@ -94,6 +94,7 @@ export const indexStyles = StyleSheet.create({
   },
   newsHeader: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
