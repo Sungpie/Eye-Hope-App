@@ -84,7 +84,7 @@ export default function SelectCategoryScreen() {
           >
             <Ionicons name="chevron-back" size={24} color="#007AFF" />
           </TouchableOpacity>
-          <Text style={selectCategoryStyles.headerTitle}>관심분야 선택</Text>
+          <Text style={selectCategoryStyles.headerTitle}>관심 분야 선택</Text>
           <View style={selectCategoryStyles.placeholder} />
         </View>
       )}
