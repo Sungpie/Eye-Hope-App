@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  
+
   return (
     <Tabs
       screenOptions={{
@@ -36,6 +36,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          // 탭 내부에서 스와이프 뒤로가기 비활성화
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -49,6 +51,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          // 탭 내부에서 스와이프 뒤로가기 비활성화
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -62,6 +66,8 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          // 탭 내부에서 스와이프 뒤로가기 비활성화
+          headerShown: false,
         }}
       />
     </Tabs>

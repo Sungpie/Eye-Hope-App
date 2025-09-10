@@ -12,7 +12,6 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface NotificationScheduleData {
-  deviceId: string;
   notificationTime: string[];
 }
 
@@ -62,16 +61,6 @@ export default function TimeSelectScreen() {
 
   const handleEveningTimeSelect = (time: string) => {
     setSelectedEveningTime(time);
-  };
-
-  // DeviceId 가져오기
-  const getDeviceId = async (): Promise<string | null> => {
-    try {
-      return await AsyncStorage.getItem("deviceId");
-    } catch (error) {
-      console.error("DeviceId 조회 오류:", error);
-      return null;
-    }
   };
 
   // 백엔드에 알림 시간 업데이트 요청 - POST 요청 제거됨
@@ -130,78 +119,14 @@ export default function TimeSelectScreen() {
       // 설정 페이지에서 온 경우 - 백엔드에 시간 업데이트 요청
       setLoading(true);
 
-      try {
-        // DeviceId 가져오기
-        const deviceId = await getDeviceId();
-
-        if (!deviceId) {
-          throw new Error("사용자 정보를 찾을 수 없습니다.");
-        }
-
-        // 선택된 시간이 있을 때만 백엔드 업데이트
-        if (selectedMorningTime && selectedEveningTime) {
-          const notificationScheduleData: NotificationScheduleData = {
-            deviceId: deviceId,
-            notificationTime: [selectedMorningTime, selectedEveningTime],
-          };
-
-          await updateNotificationSchedule(notificationScheduleData);
-
-          Alert.alert("완료", "알림 시간이 성공적으로 업데이트되었습니다.", [
-            {
-              text: "확인",
-              onPress: () => {
-                // 설정 페이지로 돌아가면서 시간 정보 전달
-                router.push({
-                  pathname: "/(tabs)/settings",
-                  params: {
-                    selectedTimes: JSON.stringify(selectedTimes),
-                    fromSettings: "true",
-                  },
-                });
-              },
-            },
-          ]);
-        } else {
-          // 시간이 선택되지 않은 경우 그냥 설정 페이지로 돌아가기
-          router.push({
-            pathname: "/(tabs)/settings",
-            params: {
-              selectedTimes: JSON.stringify(selectedTimes),
-              fromSettings: "true",
-            },
-          });
-        }
-      } catch (error) {
-        console.error("시간 업데이트 오류:", error);
-
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "시간 업데이트 중 오류가 발생했습니다.";
-
-        Alert.alert("오류", errorMessage, [
-          {
-            text: "그래도 진행",
-            onPress: () => {
-              // 오류가 발생해도 설정 페이지로 돌아가기
-              router.push({
-                pathname: "/(tabs)/settings",
-                params: {
-                  selectedTimes: JSON.stringify(selectedTimes),
-                  fromSettings: "true",
-                },
-              });
-            },
-          },
-          {
-            text: "재시도",
-            style: "cancel",
-          },
-        ]);
-      } finally {
-        setLoading(false);
-      }
+      // 설정 페이지로 돌아가면서 시간 정보 전달
+      router.push({
+        pathname: "/(tabs)/settings",
+        params: {
+          selectedTimes: JSON.stringify(selectedTimes),
+          fromSettings: "true",
+        },
+      });
     } else {
       // 일반 플로우(초기 설정)라면 바로 메인 탭으로 이동
       console.log("설정 완료 - 메인 탭으로 이동");
@@ -210,20 +135,6 @@ export default function TimeSelectScreen() {
 
       // 설정 완료 플래그 저장
       await saveSetupCompleted();
-
-      // 기본 사용자 정보를 AsyncStorage에 저장
-      const deviceId = await getDeviceId();
-      if (deviceId) {
-        await AsyncStorage.setItem(
-          "userInfo",
-          JSON.stringify({
-            deviceId: deviceId,
-            name: "",
-            email: "",
-            nickname: "사용자",
-          })
-        );
-      }
 
       router.push({
         pathname: "/(tabs)",

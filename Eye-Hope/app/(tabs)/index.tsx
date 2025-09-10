@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
-  TouchableOpacity, // TouchableOpacity를 import 합니다.
-  Linking, // Linking을 import 합니다.
+  TouchableOpacity,
+  Linking,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+// import { useBlockAllBackGestures } from "@/utils/gestureUtils"; // 유틸리티 임포트
 
 interface NewsItem {
   id: string;
@@ -25,7 +26,7 @@ interface NewsItem {
   category: string;
   source: string;
   publishedAt: string;
-  url: string; // url 속성을 추가합니다.
+  url: string;
 }
 
 // 카테고리별 색상 매핑
@@ -56,6 +57,14 @@ export default function InterestNewsScreen() {
     morning: string;
     evening: string;
   } | null>(null);
+
+  // 메인 화면에서 뒤로가기를 완전히 차단
+  // useBlockAllBackGestures(); // 주석 해제하여 사용
+
+  // 또는 더 세밀한 제어를 원한다면:
+  // useConditionalBackBlock(true, () => {
+  //   Alert.alert("알림", "이 화면에서는 뒤로가기를 할 수 없습니다.");
+  // });
 
   // 저장된 카테고리 불러오기
   useEffect(() => {
@@ -166,13 +175,13 @@ export default function InterestNewsScreen() {
     if (categories.length === 0) return;
 
     setLoading(true);
-    setError(null); // 오류 상태 초기화
+    setError(null);
     console.log("뉴스 가져오기 시작, 카테고리:", categories);
 
     try {
       const newsPromises = categories.map(async (category) => {
         try {
-          const url = `http://13.124.111.205:8080/api/news/category/${encodeURIComponent(
+          const url = `https://eyehope.site/api/news/category/${encodeURIComponent(
             category
           )}?size=3`;
           console.log(`${category} 카테고리 API 호출:`, url);
@@ -216,7 +225,6 @@ export default function InterestNewsScreen() {
         allNews.map((news, index) => `${categories[index]}: ${news.length}개`)
       );
 
-      // [수정된 부분] url을 포함하여 데이터를 가공합니다.
       const flattenedNews = allNews.flat().map((news, index) => ({
         id: news.id || news.articleId || `news-${index}`,
         title: news.title || news.headline || "제목 없음",
@@ -229,7 +237,7 @@ export default function InterestNewsScreen() {
           news.createdAt ||
           news.publishDate ||
           new Date().toISOString(),
-        url: news.url || "", // url을 추가합니다.
+        url: news.url || "",
       }));
 
       console.log("변환된 뉴스 데이터:", flattenedNews);
@@ -242,17 +250,14 @@ export default function InterestNewsScreen() {
     }
   };
 
-  // [추가된 부분] 뉴스 카드를 눌렀을 때 실행될 함수
   const handleNewsPress = async (url: string) => {
     if (!url) {
       Alert.alert("알림", "기사 원문 주소가 없습니다.");
       return;
     }
-    // 해당 URL을 열 수 있는지 확인합니다.
     const supported = await Linking.canOpenURL(url);
 
     if (supported) {
-      // URL을 엽니다 (기본 웹 브라우저 실행).
       await Linking.openURL(url);
     } else {
       Alert.alert("오류", `다음 주소를 열 수 없습니다: ${url}`);
@@ -261,7 +266,7 @@ export default function InterestNewsScreen() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    setError(null); // 새로고침 시 오류 상태 초기화
+    setError(null);
     await fetchNews();
     setRefreshing(false);
   };
@@ -377,12 +382,11 @@ export default function InterestNewsScreen() {
             <Text style={styles.sectionTitle}>오늘의 주요 뉴스</Text>
 
             {newsData.map((news) => (
-              // [수정된 부분] View를 TouchableOpacity로 변경하고 onPress 이벤트를 추가합니다.
               <TouchableOpacity
                 key={news.id}
                 style={styles.newsCard}
                 onPress={() => handleNewsPress(news.url)}
-                activeOpacity={0.7} // 터치 시 투명도를 조절하여 시각적 피드백을 줍니다.
+                activeOpacity={0.7}
               >
                 <View style={styles.newsHeader}>
                   <Text

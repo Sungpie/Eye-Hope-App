@@ -61,13 +61,6 @@ const idToCategory = (id: number): string => {
   return mapping[id] || "";
 };
 
-interface UserInfo {
-  deviceId: string;
-  name?: string;
-  email?: string;
-  nickname: string;
-}
-
 interface NewsItem {
   id: number;
   category: string;
@@ -112,7 +105,6 @@ export default function SettingsScreen() {
     morning: "오전 9시",
     evening: "오후 8시",
   });
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(false);
 
   // 앱 시작 시 저장된 데이터 로드
@@ -127,11 +119,7 @@ export default function SettingsScreen() {
       console.log("현재 params:", params);
 
       // 파라미터가 있으면 우선 처리 후 즉시 반환
-      if (
-        params.selectedCategories ||
-        params.selectedTimes ||
-        params.updatedUserInfo
-      ) {
+      if (params.selectedCategories || params.selectedTimes) {
         console.log("파라미터가 있어서 파라미터 우선 처리");
         handleParamsUpdate();
         return;
@@ -140,130 +128,13 @@ export default function SettingsScreen() {
       // 파라미터가 없을 때만 저장된 데이터 로드
       console.log("파라미터가 없어서 저장된 데이터 로드");
       loadSavedData();
-    }, [
-      params.selectedCategories,
-      params.selectedTimes,
-      params.updatedUserInfo,
-      params.fromNewsUpdate,
-    ])
+    }, [params.selectedCategories, params.selectedTimes, params.fromNewsUpdate])
   );
 
-  // 백엔드에서 사용자 정보 가져오기
-  const fetchUserInfo = async (): Promise<UserInfo | null> => {
-    try {
-      const deviceId = await AsyncStorage.getItem("deviceId");
-      if (!deviceId) {
-        console.log("DeviceId가 없습니다");
-        return null;
-      }
-
-      console.log("👤 === 백엔드에서 사용자 정보 가져오기 시작 ===");
-      console.log("📤 DeviceId:", deviceId);
-
-      const response = await fetch(
-        `http://13.124.111.205:8080/api/users/${encodeURIComponent(deviceId)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("📥 사용자 정보 응답 상태:", response.status);
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(
-          "📥 사용자 정보 응답 데이터:",
-          JSON.stringify(result, null, 2)
-        );
-
-        if (result.success && result.data) {
-          return result.data;
-        } else {
-          console.log(
-            "📥 사용자 정보 응답 데이터 형식이 올바르지 않음:",
-            result
-          );
-          return null;
-        }
-      } else {
-        const errorText = await response.text();
-        console.log(
-          "📥 사용자 정보 HTTP 오류 응답:",
-          response.status,
-          errorText
-        );
-        return null;
-      }
-    } catch (error) {
-      console.error("🚨 사용자 정보 가져오기 오류:", error);
-      return null;
-    }
-  };
-
-  // 백엔드에서 사용자 관심 뉴스 가져오기 (수정된 API 경로)
+  // 백엔드에서 사용자 관심 뉴스 가져오기 - 비활성화 (로컬 데이터만 사용)
   const fetchUserNews = async (): Promise<string[] | null> => {
-    try {
-      const deviceId = await AsyncStorage.getItem("deviceId");
-      if (!deviceId) {
-        console.log("DeviceId가 없습니다");
-        return null;
-      }
-
-      console.log("📰 === 백엔드에서 사용자 관심 뉴스 가져오기 시작 ===");
-      console.log("📤 DeviceId:", deviceId);
-
-      // 수정된 API 엔드포인트 사용 (apis -> api)
-      const response = await fetch(
-        `http://13.124.111.205:8080/api/users/news/${encodeURIComponent(
-          deviceId
-        )}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("📥 관심 뉴스 응답 상태:", response.status);
-
-      if (response.ok) {
-        const result: UserNewsResponse = await response.json();
-        console.log(
-          "📥 관심 뉴스 응답 데이터:",
-          JSON.stringify(result, null, 2)
-        );
-
-        if (result.success && result.data && Array.isArray(result.data.news)) {
-          // 새로운 응답 형식에서 카테고리명 추출
-          const categories = result.data.news.map(
-            (newsItem: NewsItem) => newsItem.category
-          );
-          console.log("📰 추출된 카테고리:", categories);
-
-          // 유효한 카테고리만 필터링
-          const validCategories = categories.filter(
-            (cat) => cat && cat.trim() !== ""
-          );
-          console.log("📰 유효한 카테고리:", validCategories);
-
-          return validCategories;
-        } else {
-          console.log("📰 관심 뉴스 응답 데이터 형식이 올바르지 않음:", result);
-          return null;
-        }
-      } else {
-        const errorText = await response.text();
-        console.log("📰 관심 뉴스 HTTP 오류 응답:", response.status, errorText);
-        return null;
-      }
-    } catch (error) {
-      console.error("🚨 사용자 관심 뉴스 가져오기 오류:", error);
-      return null;
-    }
+    console.log("📰 백엔드 API 호출 비활성화 - 로컬 데이터만 사용");
+    return null;
   };
 
   // 백엔드에서 사용자 알림 시간 가져오기 - 비활성화
@@ -320,47 +191,14 @@ export default function SettingsScreen() {
     setLoading(true);
 
     try {
-      // 1. 사용자 정보 가져오기
-      const backendUserInfo = await fetchUserInfo();
+      // 로컬 데이터만 사용 (백엔드 API 호출 비활성화)
+      console.log("📱 로컬 데이터만 사용하여 설정 로드");
 
-      if (backendUserInfo) {
-        console.log("✅ 백엔드에서 사용자 정보 로드됨:", backendUserInfo);
-        setUserInfo(backendUserInfo);
-        // 백엔드 데이터를 로컬에도 동기화
-        await AsyncStorage.setItem("userInfo", JSON.stringify(backendUserInfo));
-      } else {
-        // 백엔드에서 가져오기 실패 시 로컬 데이터 사용
-        console.log(
-          "⚠️ 백엔드에서 사용자 정보 가져오기 실패 - 로컬 데이터 사용"
-        );
-        const savedUserInfo = await AsyncStorage.getItem("userInfo");
-        if (savedUserInfo) {
-          const parsedUserInfo = JSON.parse(savedUserInfo);
-          setUserInfo(parsedUserInfo);
-          console.log("📱 로컬에서 사용자 정보 로드됨:", parsedUserInfo);
-        }
-      }
-
-      // 2. 관심 뉴스 가져오기
-      const backendCategories = await fetchUserNews();
-
-      if (backendCategories && backendCategories.length > 0) {
-        console.log("✅ 백엔드에서 관심 뉴스 로드됨:", backendCategories);
-        setCurrentCategories(backendCategories);
-        // 백엔드 데이터를 로컬에도 동기화
-        await AsyncStorage.setItem(
-          "userCategories",
-          JSON.stringify(backendCategories)
-        );
-      } else {
-        // 백엔드에서 가져오기 실패 시 로컬 데이터 사용
-        console.log("⚠️ 백엔드에서 관심 뉴스 가져오기 실패 - 로컬 데이터 사용");
-        const savedCategories = await AsyncStorage.getItem("userCategories");
-        if (savedCategories) {
-          const parsedCategories = JSON.parse(savedCategories);
-          setCurrentCategories(parsedCategories);
-          console.log("📱 로컬에서 관심 뉴스 로드됨:", parsedCategories);
-        }
+      const savedCategories = await AsyncStorage.getItem("userCategories");
+      if (savedCategories) {
+        const parsedCategories = JSON.parse(savedCategories);
+        setCurrentCategories(parsedCategories);
+        console.log("📱 로컬에서 관심 뉴스 로드됨:", parsedCategories);
       }
 
       // 3. 알림 시간 가져오기 - 비활성화
@@ -395,7 +233,6 @@ export default function SettingsScreen() {
       try {
         const savedCategories = await AsyncStorage.getItem("userCategories");
         const savedTimes = await AsyncStorage.getItem("userTimes");
-        const savedUserInfo = await AsyncStorage.getItem("userInfo");
 
         if (savedCategories) {
           setCurrentCategories(JSON.parse(savedCategories));
@@ -403,9 +240,6 @@ export default function SettingsScreen() {
         // if (savedTimes) {
         //   setCurrentTimes(JSON.parse(savedTimes));
         // }
-        if (savedUserInfo) {
-          setUserInfo(JSON.parse(savedUserInfo));
-        }
       } catch (localError) {
         console.error("❌ 로컬 데이터 로드도 실패:", localError);
       }
@@ -476,19 +310,6 @@ export default function SettingsScreen() {
     //   }
     // }
 
-    // updatedUserInfo 파라미터가 있으면 업데이트
-    if (params.updatedUserInfo) {
-      try {
-        const updatedInfo = JSON.parse(params.updatedUserInfo as string);
-        console.log("사용자 정보 상태 업데이트:", updatedInfo);
-        setUserInfo(updatedInfo);
-        // AsyncStorage에 사용자 정보 저장
-        AsyncStorage.setItem("userInfo", JSON.stringify(updatedInfo));
-      } catch (error) {
-        console.error("사용자 정보 파라미터 파싱 오류:", error);
-      }
-    }
-
     // fromNewsUpdate 파라미터가 있으면 백엔드에서 최신 뉴스 정보 다시 로드
     if (params.fromNewsUpdate === "true") {
       console.log("뉴스 업데이트 완료 - 백엔드에서 최신 정보 로드");
@@ -512,34 +333,6 @@ export default function SettingsScreen() {
   //     params: { fromSettings: "true" },
   //   });
   // };
-
-  // 사용자 정보 변경 기능 제거됨
-  const handleUserInfoChange = () => {
-    Alert.alert("알림", "사용자 정보 변경 기능이 제거되었습니다.", [
-      { text: "확인" },
-    ]);
-  };
-
-  // 접근성을 위한 사용자 정보 텍스트 생성
-  const getUserInfoAccessibilityLabel = () => {
-    if (!userInfo) {
-      return "사용자 정보를 불러올 수 없습니다.";
-    }
-
-    let label = "사용자 정보. ";
-    label += `닉네임: ${userInfo.nickname || "정보 없음"}. `;
-    if (userInfo.name) {
-      label += `이름: ${userInfo.name}. `;
-    }
-    if (userInfo.email) {
-      label += `이메일: ${userInfo.email}. `;
-    }
-    if (userInfo.deviceId) {
-      label += `Device ID: ${userInfo.deviceId.substring(0, 8)}.... `;
-    }
-
-    return label;
-  };
 
   // 접근성을 위한 관심뉴스 텍스트 생성
   const getCategoriesAccessibilityLabel = () => {
@@ -589,80 +382,6 @@ export default function SettingsScreen() {
             <Text style={styles.loadingText}>데이터를 불러오는 중...</Text>
           </View>
         )}
-
-        {/* 사용자 정보 섹션 - 접근성 개선 */}
-        <TouchableOpacity
-          style={styles.userInfoSection}
-          onPress={handleUserInfoChange}
-          activeOpacity={0.7}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel={getUserInfoAccessibilityLabel()}
-          accessibilityHint="사용자 정보를 변경할 수 있는 페이지로 이동합니다"
-        >
-          <View style={styles.sectionHeaderSimple} accessible={false}>
-            <Text style={styles.sectionTitle} accessible={false}>
-              사용자 정보
-            </Text>
-          </View>
-
-          <View accessible={false}>
-            {userInfo ? (
-              <View style={styles.userInfoContainer} accessible={false}>
-                <View style={styles.userInfoItem} accessible={false}>
-                  <Text style={styles.userInfoLabel} accessible={false}>
-                    닉네임:
-                  </Text>
-                  <Text style={styles.userInfoValue} accessible={false}>
-                    {userInfo.nickname || "정보 없음"}
-                  </Text>
-                </View>
-
-                {userInfo.name && (
-                  <View style={styles.userInfoItem} accessible={false}>
-                    <Text style={styles.userInfoLabel} accessible={false}>
-                      이름:
-                    </Text>
-                    <Text style={styles.userInfoValue} accessible={false}>
-                      {userInfo.name}
-                    </Text>
-                  </View>
-                )}
-
-                {userInfo.email && (
-                  <View style={styles.userInfoItem} accessible={false}>
-                    <Text style={styles.userInfoLabel} accessible={false}>
-                      이메일:
-                    </Text>
-                    <Text style={styles.userInfoValue} accessible={false}>
-                      {userInfo.email}
-                    </Text>
-                  </View>
-                )}
-
-                <View style={styles.userInfoItem} accessible={false}>
-                  <Text style={styles.userInfoLabel} accessible={false}>
-                    Device ID:
-                  </Text>
-                  <Text style={styles.userInfoValue} accessible={false}>
-                    {userInfo.deviceId
-                      ? userInfo.deviceId.substring(0, 8) + "..."
-                      : "정보 없음"}
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              <Text style={styles.noUserInfo} accessible={false}>
-                사용자 정보를 불러올 수 없습니다
-              </Text>
-            )}
-
-            {/* 변경 안내 문구 */}
-            <Text style={styles.changeHintText} accessible={false}>
-              사용자 정보는 읽기 전용입니다
-            </Text>
-          </View>
-        </TouchableOpacity>
 
         {/* 현재 관심뉴스 섹션 - 접근성 개선 */}
         <TouchableOpacity
@@ -823,23 +542,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#8E8E93",
   },
-  userInfoSection: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: "#34C759",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   sectionHeaderSimple: {
     marginBottom: 12,
   },
@@ -847,41 +549,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#000000",
-  },
-  userInfoContainer: {
-    gap: 8,
-    marginBottom: 12,
-  },
-  userInfoItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  userInfoLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#8E8E93",
-    width: 80,
-  },
-  userInfoValue: {
-    fontSize: 14,
-    color: "#000000",
-    flex: 1,
-  },
-  noUserInfo: {
-    fontSize: 14,
-    color: "#8E8E93",
-    textAlign: "center",
-    fontStyle: "italic",
-    marginBottom: 12,
-  },
-  changeHintText: {
-    fontSize: 16,
-    color: "#007AFF",
-    textAlign: "center",
-    fontWeight: "500",
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E5EA",
   },
   interestNewsSection: {
     marginHorizontal: 20,

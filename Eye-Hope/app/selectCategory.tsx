@@ -88,7 +88,13 @@ export default function SelectCategoryScreen() {
           styles.instructionContainer,
           {
             marginTop:
-              Platform.OS === "android" ? Math.max(insets.top + 10, 70) : 75,
+              fromSettings === "true"
+                ? Platform.OS === "android"
+                  ? Math.max(insets.top + 10, 30)
+                  : 35
+                : Platform.OS === "android"
+                ? Math.max(insets.top + 10, 70)
+                : 75,
           },
         ]}
       >

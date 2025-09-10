@@ -9,7 +9,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import uuid from "react-native-uuid";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -30,16 +29,6 @@ export default function RootLayout() {
     try {
       console.log("🔐 === _layout.tsx에서 인증 상태 확인 시작 ===");
       console.log("🔐 현재 segments:", segments);
-
-      // DeviceId 확인/생성
-      let deviceId = await AsyncStorage.getItem("deviceId");
-      if (!deviceId) {
-        deviceId = uuid.v4() as string;
-        await AsyncStorage.setItem("deviceId", deviceId);
-        console.log("🔐 새 DeviceId 생성:", deviceId);
-      } else {
-        console.log("🔐 기존 DeviceId:", deviceId);
-      }
 
       // 로컬 설정 상태 확인
       const setupCompleted = await AsyncStorage.getItem("setupCompleted");

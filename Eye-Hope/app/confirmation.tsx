@@ -43,12 +43,10 @@ const idToCategory = (id: number): string => {
 };
 
 interface UserNewsData {
-  deviceId: string;
   newsIds: number[];
 }
 
 interface UserRegistrationData {
-  deviceId: string;
   name?: string;
   email?: string;
   nickname: string;
@@ -66,36 +64,6 @@ export default function ConfirmationScreen() {
 
   // JSON 문자열을 파싱하여 카테고리 배열로 변환
   const selectedCategories = categories ? JSON.parse(categories) : [];
-
-  // 사용자 존재 여부 확인
-  const checkUserExists = async (deviceId: string): Promise<boolean> => {
-    try {
-      console.log("👤 사용자 존재 여부 확인 중:", deviceId);
-
-      const response = await fetch(
-        `http://13.124.111.205:8080/api/users/${encodeURIComponent(deviceId)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("👤 사용자 존재 확인 응답 상태:", response.status);
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("👤 사용자 존재 확인 응답:", result);
-        return result.success && result.data;
-      }
-
-      return false;
-    } catch (error) {
-      console.error("👤 사용자 존재 확인 오류:", error);
-      return false;
-    }
-  };
 
   // 사용자 등록 API 호출 - POST 요청 제거됨
   const registerUser = async (userData: UserRegistrationData) => {
@@ -141,111 +109,14 @@ export default function ConfirmationScreen() {
     setLoading(true);
 
     try {
-      // DeviceId 가져오기
-      const deviceId = await AsyncStorage.getItem("deviceId");
-      if (!deviceId) {
-        throw new Error("사용자 정보를 찾을 수 없습니다.");
-      }
+      console.log("🔍 로컬 데이터만 사용하여 설정 완료");
 
-      console.log("🔍 DeviceId:", deviceId);
-
-      // 사용자 존재 여부 확인
-      const userExists = await checkUserExists(deviceId);
-      console.log("👤 사용자 존재 여부:", userExists);
-
-      // 사용자가 존재하지 않으면 먼저 등록
-      if (!userExists) {
-        console.log("⚠️ 사용자가 존재하지 않음 - 먼저 사용자 등록 진행");
-
-        // 로컬 스토리지에서 사용자 정보 확인
-        let userInfo = null;
-        const savedUserInfo = await AsyncStorage.getItem("userInfo");
-        if (savedUserInfo) {
-          try {
-            userInfo = JSON.parse(savedUserInfo);
-          } catch (parseError) {
-            console.error("사용자 정보 파싱 오류:", parseError);
-          }
-        }
-
-        // 사용자 정보가 없으면 기본 닉네임으로 등록
-        const nickname = userInfo?.nickname || "사용자";
-
-        const userRegistrationData: UserRegistrationData = {
-          deviceId: deviceId,
-          name: undefined,
-          email: undefined,
-          nickname: nickname,
-          password: undefined,
-        };
-
-        try {
-          await registerUser(userRegistrationData);
-          console.log("✅ 사용자 등록 성공");
-
-          // 사용자 정보를 AsyncStorage에 저장
-          await AsyncStorage.setItem(
-            "userInfo",
-            JSON.stringify({
-              deviceId: deviceId,
-              name: "",
-              email: "",
-              nickname: nickname,
-            })
-          );
-        } catch (registerError) {
-          console.error("❌ 사용자 등록 실패:", registerError);
-
-          Alert.alert(
-            "사용자 등록 실패",
-            "사용자 등록에 실패했습니다. 처음부터 다시 시작하시겠습니까?",
-            [
-              {
-                text: "취소",
-                style: "cancel",
-              },
-              {
-                text: "다시 시작",
-                onPress: () => {
-                  // 로컬 데이터 모두 삭제 후 처음부터
-                  AsyncStorage.multiRemove([
-                    "setupCompleted",
-                    "userCategories",
-                    "userTimes",
-                    "userInfo",
-                    "deviceId",
-                  ]).then(() => {
-                    router.replace("/selectCategory");
-                  });
-                },
-              },
-            ]
-          );
-          return;
-        }
-      }
-
-      // 카테고리를 ID로 변환
-      const newsIds = selectedCategories.map((category: string) =>
-        categoryToId(category)
-      );
-      console.log("변환된 뉴스 ID:", newsIds);
-
-      // 백엔드에 관심 뉴스 저장
-      const userNewsData: UserNewsData = {
-        deviceId: deviceId,
-        newsIds: newsIds,
-      };
-
-      await saveUserNews(userNewsData);
-      console.log("✅ 관심 뉴스가 백엔드에 저장되었습니다");
-
-      // 로컬스토리지에도 저장 (캐시용)
+      // 로컬스토리지에 저장
       await AsyncStorage.setItem(
         "userCategories",
         JSON.stringify(selectedCategories)
       );
-      console.log("✅ 관심 뉴스가 로컬에도 저장되었습니다");
+      console.log("✅ 관심 뉴스가 로컬에 저장되었습니다");
 
       // fromSettings 파라미터 확인
       if (fromSettings === "true") {
@@ -265,15 +136,6 @@ export default function ConfirmationScreen() {
         await AsyncStorage.setItem("setupCompleted", "true");
 
         // 기본 사용자 정보를 AsyncStorage에 저장
-        await AsyncStorage.setItem(
-          "userInfo",
-          JSON.stringify({
-            deviceId: deviceId,
-            name: "",
-            email: "",
-            nickname: "사용자",
-          })
-        );
 
         router.push({
           pathname: "/(tabs)",
@@ -311,21 +173,6 @@ export default function ConfirmationScreen() {
             } else {
               // 설정 완료 플래그 저장
               AsyncStorage.setItem("setupCompleted", "true");
-
-              // 기본 사용자 정보를 AsyncStorage에 저장
-              AsyncStorage.getItem("deviceId").then((deviceId) => {
-                if (deviceId) {
-                  AsyncStorage.setItem(
-                    "userInfo",
-                    JSON.stringify({
-                      deviceId: deviceId,
-                      name: "",
-                      email: "",
-                      nickname: "사용자",
-                    })
-                  );
-                }
-              });
 
               router.push({
                 pathname: "/(tabs)",
