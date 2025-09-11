@@ -535,6 +535,9 @@ export default function SettingsScreen() {
             Eye-Hope v1.0.0{"\n"}
             개인 맞춤형 뉴스 알림 서비스
           </Text>
+          <Text style={settingsStyles.supportText}>
+            경기청년 갭이어 프로그램의 지원을 받아 제작되었습니다.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

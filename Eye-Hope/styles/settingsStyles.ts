@@ -134,4 +134,11 @@ export const settingsStyles = StyleSheet.create({
     lineHeight: 20,
     marginTop: 8,
   },
+  supportText: {
+    fontSize: 12,
+    color: "#C7C7CC",
+    textAlign: "center",
+    lineHeight: 16,
+    marginTop: 12,
+  },
 });
